@@ -67,12 +67,17 @@ WIP
 
 ### Top contributors
 
+<a href="https://github.com/NotGhoull/Void-Mod-Manager/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=NotGhoull/Void-Mod-Manager" />
+</a>
 
 ## License
 
-Distributed under "PLACEHOLDER" License. See LICENSE.txt for more information
+Distributed under the GNU General Public License v3. See LICENSE.txt for more information
 
 ## Contact
+
+WIP
 
 ## Acknowledgments
 
