@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::core::ProviderApi;
 
 // Temporary location
@@ -19,7 +21,7 @@ pub enum ModDownloadResult {
 }
 
 pub trait ModProvider {
-    fn new(api: Box<dyn ProviderApi>) -> Self;
+    fn new(api: Arc<dyn ProviderApi>) -> Self;
 
     // Due to how this might be made, we may need a
     // `start_download` and a `tick_download` or `query_download`

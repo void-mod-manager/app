@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+async-trait = "0.1.89"
 fern = "0.7.1"
+futures-util = "0.3.31"
 humantime = "2.3.0"
 log = "0.4.28"
-reqwest = "0.12.23"
+reqwest = { version = "0.12.23", features = ["stream", "rustls-tls"] }
 tokio = { version = "1.47.1", features = ["full"]}

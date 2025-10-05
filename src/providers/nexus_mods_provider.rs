@@ -1,18 +1,19 @@
-use std::{env::temp_dir, fs::File, io::Write};
+use std::{env::temp_dir, fs::File, io::Write, sync::Arc};
 
 use reqwest::get;
 
 use crate::{core::ProviderApi, traits::{ModDownloadResult, ModProvider, ModProviderFeatures}};
 
+#[deprecated(since = "v1", note = "Unusable due to issues with Nexus mods right now")]
 pub struct NexusMods {
-    api: Box<dyn ProviderApi>,
+    api: Arc<dyn ProviderApi>,
     api_token: String,
     features: ModProviderFeatures
 }
 
 impl ModProvider for NexusMods {
-    fn new(api: Box<dyn ProviderApi>) -> Self {
-        NexusMods {
+    fn new(api: Arc<dyn ProviderApi>) -> Self {
+        Self {
             api,
             api_token: "default_token".to_string(),
             features: ModProviderFeatures {
@@ -27,7 +28,6 @@ impl ModProvider for NexusMods {
     async fn download_mod(&self, mod_id: String) -> ModDownloadResult {
         let game = self.api.get_current_game();
 
-        self.api.show_alert("Test alert ".to_owned() + &self.api_token.to_string());
 
         // Download logic
         // We'd want to move most of this downloading logic into
