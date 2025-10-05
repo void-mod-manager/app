@@ -40,7 +40,7 @@ Void Mod Manager is a fast, lightweight and user-friendly tool for managing game
 
 - Easy mod installation and management
 - Clean and intuitive interface
-- Fast performance, even with large mods libraries
+- Fast performance, even with large mod libraries
 - Cross-platform support (Linux and Windows)
 - Open source and community-driven
 
