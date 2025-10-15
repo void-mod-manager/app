@@ -47,7 +47,7 @@ const navItems: NavItem[] = [
   },
 ];
 
-export function Sidebar() {
+const Sidebar = () => {
   const pathname = usePathname() ?? "/";
 
   return (
@@ -109,4 +109,6 @@ export function Sidebar() {
       </nav>
     </aside>
   );
-}
+};
+
+export default Sidebar;

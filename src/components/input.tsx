@@ -1,10 +1,10 @@
 import { cn } from "@/lib/styleUtils";
 
-export default function Input({
+const Input = ({
   className,
   type,
   ...props
-}: React.ComponentProps<"input">) {
+}: React.ComponentProps<"input">) => {
   return (
     <input
       type="text"
@@ -18,4 +18,6 @@ export default function Input({
       {...props}
     />
   );
-}
+};
+
+export default Input;

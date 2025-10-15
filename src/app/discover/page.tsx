@@ -36,7 +36,7 @@ const mods = [
   },
 ];
 
-export default function Discover() {
+const Discover = () => {
   // We'd get this value from the ModProvider (capablities field)
   const _categories = ["Filter"];
 
@@ -154,4 +154,6 @@ export default function Discover() {
       </div>
     </div>
   );
-}
+};
+
+export default Discover;

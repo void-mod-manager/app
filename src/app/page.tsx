@@ -3,7 +3,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useState } from "react";
 
-export default function Home() {
+const Home = () => {
   const [greeted, setGreeted] = useState<string | null>(null);
   const greet = useCallback((): void => {
     invoke<string>("greet").then(setGreeted).catch(console.error);
@@ -17,4 +17,6 @@ export default function Home() {
       </button>
     </main>
   );
-}
+};
+
+export default Home;
