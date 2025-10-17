@@ -41,67 +41,45 @@ const Discover = () => {
   const _categories = ["Filter"];
 
   return (
-    <div className="h-full flex flex-col pr-4 pl-4">
-      <header className="border-b border-border/40 bg-background">
-        <div className="pt-6 pb-6 space-y-4">
+    <div className="flex h-full flex-col pr-4 pl-4">
+      <header className="border-border/40 border-b bg-background">
+        <div className="space-y-4 pt-6 pb-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-medium text-foreground">
+            <h2 className="font-medium text-foreground text-xl">
               Discover new mods
             </h2>
           </div>
           <div className="relative">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <SearchIcon className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search for mods"
-              className="pl-9 h-10 text-sm bg-background border-border/40 focus-visible:border-border"
+              className="h-10 border-border/40 bg-background pl-9 text-sm focus-visible:border-border"
             />
           </div>
         </div>
       </header>
 
-      <div className="flex-1 h-fit flex flex-col overflow-hidden mb-4">
+      <div className="mb-4 flex h-fit flex-1 flex-col overflow-hidden">
         {/* Scrollable container */}
         <div className="flex-1 overflow-y-auto p-2 sm:p-4 lg:p-6">
-          <div
-            className="
-              grid
-              grid-cols-1
-              sm:grid-cols-2
-              lg:grid-cols-3
-              xl:grid-cols-4
-              2xl:grid-cols-5
-              gap-4 sm:gap-6
-              auto-rows-fr
-            "
-          >
+          <div className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             {mods.map((mod) => (
               <div
                 key={mod.id}
-                className="
-                  group
-                  flex flex-col
-                  bg-card/40
-                  border border-border/30
-                  rounded-2xl
-                  overflow-hidden
-                  min-h-72
-                  hover:shadow-lg hover:border-border/60
-                  transition-all duration-300
-                  cursor-pointer
-                "
+                className="group flex min-h-72 cursor-pointer flex-col overflow-hidden rounded-2xl border border-border/30 bg-card/40 transition-all duration-300 hover:border-border/60 hover:shadow-lg"
               >
                 {/* Image Section */}
                 <div className="relative aspect-video overflow-hidden bg-muted/30">
                   <Image
                     src="https://placehold.co/600x400"
                     alt={mod.name ?? "Unknown mod"}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     // for nextjs happiness
                     width={0}
                     height={0}
                   />
-                  <div className="absolute top-2 right-2 flex items-center gap-1 bg-background/80 backdrop-blur-sm px-2 py-1 rounded-md text-xs text-foreground/80">
-                    <DownloadIcon className="w-4 h-4 opacity-80" />
+                  <div className="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-background/80 px-2 py-1 text-foreground/80 text-xs backdrop-blur-sm">
+                    <DownloadIcon className="h-4 w-4 opacity-80" />
                     <span className="font-medium tabular-nums">
                       {mod.downloads ?? "?"}
                     </span>
@@ -109,18 +87,18 @@ const Discover = () => {
                 </div>
 
                 {/* Content Section */}
-                <div className="flex flex-col justify-between flex-1 p-4 sm:p-5">
+                <div className="flex flex-1 flex-col justify-between p-4 sm:p-5">
                   <div>
-                    <h3 className="font-semibold text-base sm:text-lg text-foreground mb-1 leading-tight group-hover:text-foreground/90 transition-colors">
+                    <h3 className="mb-1 font-semibold text-base text-foreground leading-tight transition-colors group-hover:text-foreground/90 sm:text-lg">
                       {mod.name ?? "Unknown mod"}
                     </h3>
 
-                    <div className="flex items-center text-xs sm:text-sm text-muted-foreground mb-3 flex-wrap gap-1">
+                    <div className="mb-3 flex flex-wrap items-center gap-1 text-muted-foreground text-xs sm:text-sm">
                       <span>By</span>
                       <Image
                         src={"https://placehold.co/128x128"}
                         alt={mod.author ?? "Unknown Author"}
-                        className="inline-block w-5 h-5 rounded-full mx-1"
+                        className="mx-1 inline-block h-5 w-5 rounded-full"
                         // for nextjs happiness
                         width={0}
                         height={0}
@@ -134,14 +112,14 @@ const Discover = () => {
                       {mod.category?.map((category) => (
                         <div
                           key={category}
-                          className="text-xs sm:text-sm bg-muted/50 border border-border/40 px-2 py-0.5 rounded"
+                          className="rounded border border-border/40 bg-muted/50 px-2 py-0.5 text-xs sm:text-sm"
                         >
                           {category}
                         </div>
                       ))}
                     </div>
 
-                    <p className="text-sm text-muted-foreground line-clamp-3 text-ellipsis group-hover:text-foreground/90 transition-colors">
+                    <p className="line-clamp-3 text-ellipsis text-muted-foreground text-sm transition-colors group-hover:text-foreground/90">
                       {mod.description ||
                         "No description provided for this mod"}
                     </p>
