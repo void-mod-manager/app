@@ -51,25 +51,25 @@ const Sidebar = () => {
   const pathname = usePathname() ?? "/";
 
   return (
-    <aside className="w-64 border-r border-border/50 bg-sidebar flex flex-col">
-      <div className="p-4 border-b border-border/50">
+    <aside className="flex w-64 flex-col border-border/50 border-r bg-sidebar">
+      <div className="border-border/50 border-b p-4">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <p className="text-primary font-bold">?</p>
+          <div className="flex h-7 w-7 items-center justify-center rounded-md border border-primary/20 bg-primary/10">
+            <p className="font-bold text-primary">?</p>
           </div>
           <div>
-            <h1 className="font-semibold text-sm text-sidebar-foreground">
+            <h1 className="font-semibold text-sidebar-foreground text-sm">
               Void Mod Manager
             </h1>
-            <p className="text-[10px] text-muted-foreground font-mono uppercase">
+            <p className="font-mono text-[10px] text-muted-foreground uppercase">
               Dev {"///"} {process.env.NEXT_PUBLIC_COMMIT_SHA}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="p-3 border-b border-border/50">
-        <p className="text-[10px] h-full align-middle text-center font-medium text-muted-foreground uppercase pb-2 pt-2 tracking-wider">
+      <div className="border-border/50 border-b p-3">
+        <p className="h-full pt-2 pb-2 text-center align-middle font-medium text-[10px] text-muted-foreground uppercase tracking-wider">
           Game Providers unavaliable
         </p>
       </div>
@@ -91,14 +91,14 @@ const Sidebar = () => {
                 <Link
                   href={item.path}
                   className={cn(
-                    "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm transition-colors group",
+                    "group flex w-full items-center justify-between rounded-md px-2 py-2 text-sm transition-colors",
                     isSelected
                       ? "bg-muted text-foreground"
                       : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                   )}
                 >
                   <div className="flex items-center gap-2">
-                    <Icon className="w-4 h-4" />
+                    <Icon className="h-4 w-4" />
                     <span className="font-normal">{item.label}</span>
                   </div>
                 </Link>
