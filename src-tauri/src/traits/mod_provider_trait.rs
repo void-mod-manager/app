@@ -1,8 +1,4 @@
-use std::sync::Arc;
-
-use tokio::sync;
-
-use crate::core::ProviderApi;
+use crate::providers::GenericMod;
 
 // Temporary location
 #[derive(Default, Debug)]
@@ -33,6 +29,8 @@ pub trait ModProvider: Send + Sync {
     // since we're doing mutlithreading, and I don't think we can have a
     // "streamed" like return where it changes its return independently
     async fn download_mod(&self, mod_id: String) -> ModDownloadResult;
+
+    async fn discover_mods(&self, game_id: String) -> Vec<GenericMod>;
 
     // This is where we setup the plugin, here we'd end up returning:
     //  - The capabilities of the provider (ModProviderFeatures)

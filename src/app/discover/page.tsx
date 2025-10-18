@@ -1,44 +1,47 @@
 "use client";
 
+import { invoke } from "@tauri-apps/api/core";
 import { DownloadIcon, SearchIcon } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import Input from "@/components/input";
 
-const mods = [
-  {
-    id: 1,
-    name: "Test mod",
-    author: "Me",
-    downloads: 1,
-    category: ["Filter", "Filter 2"],
-    // image: "/placeholder.svg",
-    description:
-      "This is my mod description, or something maybe please work it works that's crazy, why didn't it work before?",
-    version: "1.0.0",
-    lastUpdate: "DATE",
-    dependencies: [],
-    screenshots: [],
-  },
-  {
-    id: 2,
-  },
-  {
-    id: 3,
-  },
-  {
-    id: 4,
-  },
-  {
-    id: 5,
-  },
-  {
-    id: 6,
-  },
-];
+type ModType = {
+  id: number;
+  name: string;
+  description: string;
+  short_description: string;
+  thumbnail_image: string;
+  user_avatar: string;
+  user_name: string;
+  downloads: number;
+  views: number;
+};
 
 const Discover = () => {
   // We'd get this value from the ModProvider (capablities field)
+  const [mods, setMods] = useState<ModType[]>([]);
   const _categories = ["Filter"];
+
+  useEffect(() => {
+    const handle = () => {
+      console.debug("[debug] Game changed, event recieved");
+    };
+
+    window.addEventListener("gameChanged", handle);
+
+    return () => {
+      window.removeEventListener("gameChanged", handle);
+    };
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const mods = await invoke<ModType[]>("get_discovery_mods");
+      setMods(mods);
+      console.debug("Got mods", mods);
+    })();
+  }, []);
 
   return (
     <div className="flex h-full flex-col pr-4 pl-4">
@@ -71,7 +74,7 @@ const Discover = () => {
                 {/* Image Section */}
                 <div className="relative aspect-video overflow-hidden bg-muted/30">
                   <Image
-                    src="https://placehold.co/600x400"
+                    src={mod.thumbnail_image ?? "https://placehold.co/600x400"}
                     alt={mod.name ?? "Unknown mod"}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     // for nextjs happiness
@@ -96,15 +99,17 @@ const Discover = () => {
                     <div className="mb-3 flex flex-wrap items-center gap-1 text-muted-foreground text-xs sm:text-sm">
                       <span>By</span>
                       <Image
-                        src={"https://placehold.co/128x128"}
-                        alt={mod.author ?? "Unknown Author"}
+                        src={
+                          mod.thumbnail_image ?? "https://placehold.co/128x128"
+                        }
+                        alt={mod.user_name ?? "Unknown Author"}
                         className="mx-1 inline-block h-5 w-5 rounded-full"
                         // for nextjs happiness
                         width={0}
                         height={0}
                       />
                       <span className="font-medium text-foreground/80">
-                        {mod.author ?? "???"}
+                        {mod.user_name ?? "???"}
                       </span>
                     </div>
 

@@ -20,7 +20,7 @@ export function View<V extends string>({
   children,
   Wrapper,
   keepMounted = false,
-}: ViewProps<V>) {
+}: ViewProps<V>): React.ReactNode {
   const active = isActive(name);
 
   if (!active && !keepMounted) return null;
@@ -30,7 +30,7 @@ export function View<V extends string>({
       {children}
     </Wrapper>
   ) : active ? (
-    { children }
+    children
   ) : null;
 
   return content;

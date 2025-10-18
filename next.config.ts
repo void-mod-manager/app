@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
   },
   distDir: "dist",
 
+  experimental: {
+    reactCompiler: true,
+  },
+
   env: {
     NEXT_PUBLIC_COMMIT_SHA: commit,
   },

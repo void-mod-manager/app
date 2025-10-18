@@ -52,7 +52,6 @@ async fn main() {
         .register_game_provider(payday_2_game_provider, ProviderSource::Core);
 
     let ctx = Arc::new(ctx_builder.freeze());
-    ctx.activate_game("payday_2").unwrap();
     ctx.debug_dump();
     ui::run(ctx);
 

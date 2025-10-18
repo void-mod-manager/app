@@ -1,3 +1,5 @@
+"use client";
+
 import { invoke } from "@tauri-apps/api/core";
 import {
   BugIcon,
@@ -10,7 +12,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/styleUtils";
 import {
   Select,
@@ -58,13 +60,40 @@ const navItems: NavItem[] = [
   },
 ];
 
+type GameMetadata = {
+  id: string;
+  display_name: string;
+  short_name: string;
+  icon: {
+    Path: string;
+  };
+  provider_source: "core" | "plugin";
+};
+
+async function handleGameChange(newGame: string) {
+  console.debug("Game changed!");
+  await invoke("set_active_game", { id: newGame });
+  const event = new CustomEvent("gameChanged");
+  window.dispatchEvent(event);
+}
+
 const Sidebar = () => {
   const pathname = usePathname() ?? "/";
+  const [games, setGames] = useState<GameMetadata[]>();
 
   useEffect(() => {
     (async () => {
-      const providers = await invoke("list_providers");
-      console.debug("[debug] Found loaded providers", providers);
+      const gameIds = await invoke<string[]>("list_games");
+      console.debug("[debug] Found loaded providers", gameIds);
+
+      const newGames: GameMetadata[] = [];
+      for (const id of gameIds) {
+        const data = await invoke<GameMetadata>("get_metadata_for", { id: id });
+        newGames.push(data);
+      }
+
+      setGames(newGames);
+      console.debug("[debug] Loaded games", newGames);
     })();
   }, []);
 
@@ -87,39 +116,24 @@ const Sidebar = () => {
       </div>
 
       <div className="border-border/50 border-b p-3">
-        <Select>
+        <Select onValueChange={handleGameChange}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select a game" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="core:payday_2">
-              <span className="flex w-full items-center gap-2 align-middle">
-                <Image
-                  src={"https://placehold.co/25x25?text=?"}
-                  alt={""}
-                  width={25}
-                  height={25}
-                  className="rounded-md"
-                />
-                PAYDAY 2
-                <span className="ml-auto flex items-center">
-                  <TriangleAlertIcon className="h-4 w-4 text-red-900" />
+            {games?.map((game) => (
+              <SelectItem key={game.id} value={game.id}>
+                <span className="flex w-full items-center gap-2 align-middle">
+                  <Image
+                    src={game.icon.Path ?? "https://placehold.co/25x25?text=?"}
+                    alt={`Game icon for ${game.display_name}`}
+                    width={25}
+                    height={25}
+                  />
+                  {game.display_name}
                 </span>
-              </span>
-            </SelectItem>
-            <SelectItem value="core:cyberpunk_2077">
-              <span className="flex w-full items-center gap-2 align-middle">
-                <Image
-                  src={
-                    "https://cdn2.steamgriddb.com/icon/b3e3e393c77e35a4a3f3cbd1e429b5dc/32/256x256.png"
-                  }
-                  alt={""}
-                  width={25}
-                  height={25}
-                />
-                Cyberpunk 2077
-              </span>
-            </SelectItem>
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

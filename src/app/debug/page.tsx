@@ -12,7 +12,7 @@ export interface Mod {
   name: string;
 }
 
-export async function fetchModsForGame(name: string): Promise<Mod[]> {
+async function fetchModsForGame(name: string): Promise<Mod[]> {
   await new Promise((r) => setTimeout(r, Math.random() * 150));
   if (Math.random() < 0.2) {
     throw new Error(`Failed to fetch mods for game: ${name}`);

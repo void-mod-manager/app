@@ -1,7 +1,9 @@
 use std::{collections::HashMap, sync::{Arc, Mutex}};
 
 
-use crate::traits::{GameProvider, ModProvider};
+use serde::{Deserialize, Serialize};
+
+use crate::traits::{GameMetadata, GameProvider, ModProvider};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ProviderSource {
@@ -15,7 +17,7 @@ pub struct ProviderEntry {
     pub provider: Arc<dyn ModProvider + Send + Sync>
 }
 
-#[derive(thiserror::Error, Debug, PartialEq, Eq)]
+#[derive(thiserror::Error, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RegistryError {
     #[error("Invalid id: {0}")]
     InvalidId(String),
@@ -156,6 +158,7 @@ impl Context {
             return Err(RegistryError::NotFound(id));
         }
         let mut active = self.active_game.lock().unwrap();
+        println!("Activated game {}", &id);
         *active = Some(id);
         Ok(())
     }
@@ -171,6 +174,17 @@ impl Context {
                 .get(&id)
                 .map(|g| g.required_provider_id.clone())
         })
+    }
+
+    pub fn get_metadata(&self, id: &str) -> Result<GameMetadata, RegistryError> {
+        let id = normalize_id(id)?;
+        match self.game_providers.get(&id) {
+            Some(game_entry) => {
+                let metadata = game_entry.game.metadata();
+                Ok(metadata)
+            }
+            None => Err(RegistryError::NotFound(id)),
+        }
     }
 
     #[cfg(debug_assertions)]

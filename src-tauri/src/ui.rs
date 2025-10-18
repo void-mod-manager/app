@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use tauri::{State};
 
-use crate::core::{Context as AppContext, ProviderEntry};
+use crate::{core::{Context as AppContext, ProviderEntry, RegistryError}, providers::GenericMod, traits::GameMetadata};
 
 #[tauri::command]
 fn greet() -> String {
@@ -9,7 +9,28 @@ fn greet() -> String {
 }
 
 #[tauri::command]
-async fn list_providers(state: State<'_, Arc<AppContext>>) -> Result<Vec<String>, ()> {
+fn get_metadata_for(id: String, state: State<'_, Arc<AppContext>>) -> Result<GameMetadata, RegistryError> {
+    state.get_metadata(&id)
+}
+
+#[tauri::command]
+fn set_active_game(id: String, state: State<'_, Arc<AppContext>>) -> Result<(), RegistryError> {
+    state.activate_game(&id)?;
+    Ok(())
+}
+
+#[tauri::command]
+async fn get_discovery_mods(state: State<'_, Arc<AppContext>>) -> Result<Vec<GenericMod>, RegistryError> {
+    let provider_id = state.active_game_required_provider().expect("Select a game first");
+    let provider = state.get_mod_provider(&provider_id)?;
+
+    let x = provider.discover_mods("1".into()).await;
+
+    Ok(x)
+}
+
+#[tauri::command]
+async fn list_games(state: State<'_, Arc<AppContext>>) -> Result<Vec<String>, ()> {
     Ok(state.list_games()
         .iter()
         .map(|g| g.0.clone())
@@ -39,7 +60,7 @@ pub fn run(ctx: Arc<AppContext>) {
       Ok(())
     })
     .manage(ctx)
-    .invoke_handler(tauri::generate_handler![greet, list_providers])
+    .invoke_handler(tauri::generate_handler![greet, list_games, get_metadata_for, get_discovery_mods, set_active_game])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
