@@ -5,6 +5,7 @@ import { DownloadIcon, SearchIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Input from "@/components/input";
+import ModOverlay from "@/components/modOverlay";
 
 type ModType = {
   id: number;
@@ -45,6 +46,7 @@ const Discover = () => {
 
   return (
     <div className="flex h-full flex-col pr-4 pl-4">
+      <ModOverlay />
       <header className="border-border/40 border-b bg-background">
         <div className="space-y-4 pt-6 pb-6">
           <div className="flex items-center justify-between">
@@ -114,14 +116,14 @@ const Discover = () => {
                     </div>
 
                     <div className="mb-2 flex flex-wrap gap-2">
-                      {mod.category?.map((category) => (
-                        <div
-                          key={category}
-                          className="rounded border border-border/40 bg-muted/50 px-2 py-0.5 text-xs sm:text-sm"
-                        >
-                          {category}
-                        </div>
-                      ))}
+                      {/*{mod.category?.map((category) => (*/}
+                      <div
+                        // key={category}
+                        className="rounded border border-border/40 bg-muted/50 px-2 py-0.5 text-xs sm:text-sm"
+                      >
+                        Category
+                      </div>
+                      {/*))}*/}
                     </div>
 
                     <p className="line-clamp-3 text-ellipsis text-muted-foreground text-sm transition-colors group-hover:text-foreground/90">

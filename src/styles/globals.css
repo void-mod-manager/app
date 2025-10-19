@@ -73,6 +73,18 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+.overlay-blur-before::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: var(--overlay-image-url, none);
+  background-size: cover;
+  background-position: center;
+  filter: blur(5px);
+  opacity: 1;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
