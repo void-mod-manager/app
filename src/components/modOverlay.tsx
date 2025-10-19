@@ -6,7 +6,6 @@ import type * as React from "react";
 import { useState } from "react";
 // import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/styleUtils";
-import { Card, CardContent } from "./card";
 
 function AlertDialog({
   ...props
@@ -156,37 +155,41 @@ const ModOverlay = () => {
               {/*Authors*/}
               <div className="flex gap-2 align-middle">
                 <div className="-space-x-4 flex flex-row">
-                  <img
+                  <Image
                     src={
                       "https://storage.modworkshop.net/users/images/avatar_31157.jpg"
                     }
                     width={30}
                     height={30}
                     className="rounded-full"
+                    alt="avatar 31157"
                   />
-                  <img
+                  <Image
                     src={
                       "https://storage.modworkshop.net/users/images/avatar_55826.png"
                     }
                     width={30}
                     height={30}
                     className="rounded-full"
+                    alt="avatar 55826"
                   />
-                  <img
+                  <Image
                     src={
                       "https://storage.modworkshop.net/users/images/thumbnail_pyMh1U95zK74s4MHF7bgwY2edR2Zkv9H4FE8e6eZ.webp"
                     }
                     width={30}
                     height={30}
                     className="rounded-full"
+                    alt="avatar"
                   />
-                  <img
+                  <Image
                     src={
                       "https://storage.modworkshop.net/users/images/thumbnail_sRnkf2T698NONHeH0iIK10oumOXD2bpRkXWCM3Pv.webp"
                     }
                     width={30}
                     height={30}
                     className="rounded-full"
+                    alt="avatar"
                   />
                 </div>
 
@@ -200,11 +203,14 @@ const ModOverlay = () => {
         {/*Content*/}
         <div className="mt-8 grid max-h-96 w-full grid-cols-2 gap-14 p-2 pr-8 pl-8">
           <div className="max-h-96">
-            <img
+            <Image
               src={
                 "https://storage.modworkshop.net/mods/images/YQ1pRPgFdHINtzbJQLS5yWUNO9SAN0K2qcMlIAeE.webp"
               }
               className="h-full w-full rounded-lg object-cover"
+              width={0}
+              height={0}
+              alt="mod cover"
             />
           </div>
           <div className="flex flex-col gap-2 rounded-lg border border-border/40 bg-muted/50 p-3">
