@@ -148,7 +148,7 @@ const ModOverlay = () => {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger>Trigger</AlertDialogTrigger>
-      <AlertDialogContent className="flex min-h-[85vh] min-w-[90vw] flex-col overflow-hidden rounded-xl border border-neutral-800 bg-[#0e0e0f] p-0 font-sans text-white">
+      <AlertDialogContent className="flex max-h-[95vh] min-h-[80vh] w-full min-w-[90vw] max-w-screen flex-col overflow-scroll rounded-xl border border-neutral-800 bg-[#0e0e0f] p-0 font-sans text-white">
         {/* Header */}
         <div className="relative h-56 w-full overflow-hidden rounded-t-xl">
           <Image
