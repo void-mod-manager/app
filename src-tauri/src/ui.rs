@@ -1,7 +1,7 @@
 use std::sync::Arc;
-use tauri::{State};
+use tauri::{ipc::IpcResponse, State};
 
-use crate::{core::{Context as AppContext, ProviderEntry, RegistryError}, providers::{GenericMod, ModExtendedMetadata}, traits::GameMetadata};
+use crate::{core::{Context as AppContext, ProviderEntry, RegistryError}, providers::{GenericMod, ModExtendedMetadata}, traits::{DiscoveryQuery, DiscoveryResult, GameMetadata}};
 
 #[tauri::command]
 fn greet() -> String {
@@ -25,13 +25,20 @@ fn get_active_game(state: State<'_, Arc<AppContext>>) -> Option<String> {
 }
 
 #[tauri::command]
-async fn get_discovery_mods(state: State<'_, Arc<AppContext>>) -> Result<Vec<GenericMod>, RegistryError> {
+async fn get_discovery_mods(state: State<'_, Arc<AppContext>>, page: Option<u32>) -> Result<DiscoveryResult, RegistryError> {
     let provider_id = state.active_game_required_provider().expect("Select a game first");
     let provider = state.get_mod_provider(&provider_id)?;
 
-    let x = provider.discover_mods("1".into()).await;
+    let result = provider.discover(&DiscoveryQuery {
+        game_id: "1".into(),
+        page: page,
+        page_size: None,
+        search: None,
+        tags: None,
+        sort: None
+    }).await.map_err(|e| RegistryError::NotFound(format!("Discovery error: {}", e)));
 
-    Ok(x)
+    result
 }
 
 #[tauri::command]

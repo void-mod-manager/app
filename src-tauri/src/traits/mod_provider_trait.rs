@@ -1,4 +1,4 @@
-use crate::providers::{GenericMod, ModExtendedMetadata};
+use crate::{providers::{GenericMod, ModExtendedMetadata}, traits::{DiscoveryError, DiscoveryQuery, DiscoveryResult}};
 
 // Temporary location
 #[derive(Default, Debug)]
@@ -30,7 +30,23 @@ pub trait ModProvider: Send + Sync {
     // "streamed" like return where it changes its return independently
     async fn download_mod(&self, mod_id: String) -> ModDownloadResult;
 
-    async fn discover_mods(&self, game_id: String) -> Vec<GenericMod>;
+    async fn discover(&self, query: &DiscoveryQuery) -> Result<DiscoveryResult, DiscoveryError>;
+
+    #[deprecated(since = "<COMMIT_HASH>", note = "Use `discover` instead")]
+    async fn discover_mods(&self, game_id: String) -> Vec<GenericMod> {
+        let q = DiscoveryQuery {
+            game_id,
+            page: Some(1),
+            page_size: Some(50),
+            search: None,
+            tags: None,
+            sort: None,
+        };
+        match self.discover(&q).await {
+            Ok(r) => r.mods,
+            Err(_) => vec![]
+        }
+    }
     async fn get_extended_mod(&self, mod_id: &str) -> ModExtendedMetadata;
 
     // This is where we setup the plugin, here we'd end up returning:
