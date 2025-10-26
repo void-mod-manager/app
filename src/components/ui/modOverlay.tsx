@@ -93,7 +93,7 @@ function ModOverlay(props: ModOverlay.Props) {
                       width={36}
                       height={36}
                       className="rounded-full border-2 border-white"
-                      alt={`${author}'s avatar`}
+                      alt={`${author.name}'s avatar`}
                     />
                   ))}
                 </div>

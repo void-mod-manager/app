@@ -91,7 +91,7 @@ pub struct ModDependency {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ModExtendedMetadata {
     pub header_image: String,
-    pub caoursel_images: Vec<String>,
+    pub carousel_images: Vec<String>,
     pub version: String,
     pub installed: bool,
     pub description: String,

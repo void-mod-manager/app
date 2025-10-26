@@ -168,7 +168,7 @@ impl ModProvider for ModWorkShopProvider {
                 Some(file) if !file.is_empty() => format!("https://storage.modworkshop.net/mods/images/{}", file),
                 _ => "https://modworkshop.net/assets/default-banner.webp".to_owned()
             },
-            caoursel_images: parsed["images"]
+            carousel_images: parsed["images"]
                 .as_array()
                 .unwrap_or(&vec![])
                 .iter()

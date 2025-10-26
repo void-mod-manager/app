@@ -31,7 +31,7 @@ async fn get_discovery_mods(state: State<'_, Arc<AppContext>>, page: Option<u32>
 
     let result = provider.discover(&DiscoveryQuery {
         game_id: "1".into(),
-        page: page,
+        page,
         page_size: None,
         search: None,
         tags: None,

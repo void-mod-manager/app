@@ -72,7 +72,7 @@ pub struct Context {
 
 
 impl Context {
-    pub fn get_mod_provider(&self, id: &str) -> Result<Arc<dyn ModProvider + Send + Sync>, RegistryError> {
+    pub fn get_mod_provider(&self, id: &str) -> Result<Arc<dyn ModProvider>, RegistryError> {
         let id = normalize_id(id)?;
         self.mod_providers
             .get(&id)
@@ -130,7 +130,7 @@ impl Context {
     }
 
     pub async fn get_extended_info(&self, id: &str) -> Result<ModExtendedMetadata, RegistryError> {
-            let id = normalize_id(&id)?;
+            let id = normalize_id(id)?;
             let provider = self.active_game_required_provider().unwrap();
             let provider_entry = self
                 .mod_providers

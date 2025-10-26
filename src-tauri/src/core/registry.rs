@@ -12,7 +12,7 @@ pub enum ProviderSource {
 pub struct ProviderEntry {
     pub id: String,
     pub source: ProviderSource,
-    pub provider: Arc<dyn ModProvider + Send + Sync>
+    pub provider: Arc<dyn ModProvider>
 }
 
 #[derive(thiserror::Error, Debug, PartialEq, Eq, Serialize, Deserialize)]
