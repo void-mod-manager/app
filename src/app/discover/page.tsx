@@ -4,9 +4,9 @@ import { invoke } from "@tauri-apps/api/core";
 import { SearchIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import ModOverlay from "@/components/modOverlay";
 import Input from "@/components/primitives/input";
 import ModCard from "@/components/ui/modCard";
+import ModOverlay from "@/components/ui/modOverlay";
 import PaginationBar from "@/components/ui/paginationBar";
 import type {
   DiscoverFilter,
@@ -87,6 +87,7 @@ const Discover = () => {
           : "Unsupported",
       downloads: merged.downloads ?? "-1",
       likes: "Unsupported",
+      tags: merged.tags ?? [],
       open: true,
     };
     setActiveMod(props);
@@ -211,6 +212,7 @@ const Discover = () => {
 
       <div className="relative mb-4 flex h-fit flex-1 flex-col overflow-hidden">
         {/* Scrollable container */}
+        {/* TODO: Turn this into a virtualized grid */}
         <div className="flex-1 overflow-y-auto p-2 sm:p-4 lg:p-6">
           {isLoading ? (
             <div className="flex h-full w-full items-center justify-center">

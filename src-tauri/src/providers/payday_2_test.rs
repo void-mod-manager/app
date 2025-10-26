@@ -1,6 +1,4 @@
-use std::sync::Arc;
-
-use crate::traits::{GameIcon, GameMetadata, GameProvider, GameProviderError, ModProvider};
+use crate::traits::{GameIcon, GameMetadata, GameProvider};
 
 pub struct Payday2Provider {
 

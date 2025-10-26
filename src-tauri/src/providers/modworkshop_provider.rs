@@ -1,10 +1,9 @@
-use std::{string, sync::Arc};
-use log::{info, kv::ToValue};
+use std::sync::Arc;
+use log::info;
 use reqwest::header::{CONTENT_TYPE, USER_AGENT};
-use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use tauri::Url;
-use crate::{core::ProviderApi, traits::{DiscoveryError, DiscoveryMeta, DiscoveryQuery, DiscoveryResult, ModProvider, PaginationMeta, SortOrder}};
+use crate::{core::ProviderApi, traits::{DiscoveryError, DiscoveryMeta, DiscoveryQuery, DiscoveryResult, ModExtendedMetadata, ModProvider, ModSummary, PaginationMeta, SortOrder}};
 
 
 pub struct ModWorkShopProvider {
@@ -16,13 +15,7 @@ impl ModWorkShopProvider {
         Self { api }
     }
 
-    // fn map_game_id(&self, game_id: &str) -> Result<u32, DiscoveryError> {
-    //     match game_id {
-    //         1 => Ok(1),
-    //         other => Err(DiscoveryError::InvalidQuery(format!("Unsupported game_id '{}'", other)))
-    //     }
-    // }
-
+    // TODO
     fn map_sort(sort: &SortOrder) -> &'static str {
         match sort {
             SortOrder::Relevance => "relevance",
@@ -51,6 +44,7 @@ impl ModWorkShopProvider {
         Ok(url)
     }
 
+    // TODO, since modworkshop uses a mix of both body and URL parameters (according to their docs)
     fn build_body(&self, query: &DiscoveryQuery) -> Result<Value, DiscoveryError> {
         // TODO: harcoded
         let id = json!(1);
@@ -64,42 +58,6 @@ impl ModWorkShopProvider {
         Ok(root)
     }
 
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GenericMod {
-    id: String,
-    name: String,
-    description: String,
-    short_description: String,
-    downloads: u64,
-    views: u64,
-    likes: u64,
-    thumbnail_image: String,
-
-    // For now
-    tags: Vec<String>,
-
-    // TODO: Make this authors and use a modAuthors vec
-    user_name: String,
-    user_avatar: String,
-
-}
-
-pub struct ModDependency {
-    id: String,
-    name: String,
-    icon: String,
-    installed: bool,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ModExtendedMetadata {
-    pub header_image: String,
-    pub caoursel_images: Vec<String>,
-    pub version: String,
-    pub installed: bool,
-    pub description: String,
 }
 
 #[async_trait::async_trait]
@@ -124,11 +82,11 @@ impl ModProvider for ModWorkShopProvider {
 
         let mods = parsed["data"].as_array().unwrap();
         let meta = parsed["meta"].as_object().unwrap();
-        let mut modInfos: Vec<GenericMod> = Vec::new();
+        let mut mod_infos: Vec<ModSummary> = Vec::new();
 
         for v in mods {
-            modInfos.push(
-                GenericMod {
+            mod_infos.push(
+                ModSummary {
                     name: v["name"].as_str().unwrap_or("error").to_owned(),
                     id: v["id"].as_i64().unwrap_or(0).to_string().to_owned(),
                     description: v["desc"].as_str().unwrap_or("error").to_owned(),
@@ -164,7 +122,7 @@ impl ModProvider for ModWorkShopProvider {
                 applied_tags: vec![],
                 available_tags: Some(vec![]),
             },
-            mods: modInfos
+            mods: mod_infos
         };
         // dbg!(&r);
         Ok(r)

@@ -3,29 +3,24 @@ mod traits;
 mod providers;
 mod core;
 mod binary;
-mod screens;
 mod ui;
 
-use async_trait::async_trait;
 use log::{info, trace, warn};
-use tokio::sync::watch;
 use traits::ModProvider;
-use std::{env, sync::Arc, time::SystemTime};
+use std::{env, sync::Arc};
 
-use crate::{core::{ContextBuilder, DefaultDownloadService, DownloadService, ProviderApi, ProviderSource}, providers::{ModWorkShopProvider, Payday2Provider}, traits::GameProvider};
-use crate::core::Context;
+use crate::{core::{ContextBuilder, CoreProviderApi, DefaultDownloadService, DownloadService, ProviderSource}, providers::{ModWorkShopProvider, Payday2Provider}};
 
 #[tokio::main]
 async fn main() {
 
-    if cfg!(target_os = "linux") {
+    #[cfg(target_os = "linux")]
+    {
         info!("Running under the penguin");
         if has_proprietary_linux_driver() && is_wayland() {
             warn!("Wayland + Nvidia doesn't play nicely with Tauri, applying workaround");
 
-            unsafe {
-                env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
-            }
+            env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
 
             let env_var = env::var("WEBKIT_DISABLE_DMABUF_RENDERER");
             // Check if the var applied
@@ -41,7 +36,7 @@ async fn main() {
 
 
     let shared_download_service: Arc<dyn DownloadService> = Arc::new(DefaultDownloadService::new());
-    let api = PApi::new(shared_download_service).into_arc();
+    let api = CoreProviderApi::new(shared_download_service).into_arc();
 
     let mwsprovider = Arc::new(ModWorkShopProvider::new(api.clone()));
     let _ = ctx_builder
@@ -84,31 +79,4 @@ fn has_proprietary_linux_driver() -> bool {
 fn is_wayland() -> bool {
     trace!("Wayland check");
     std::env::var("WAYLAND_DISPLAY").is_ok()
-}
-
-
-pub struct PApi {
-    download_service: Arc<dyn DownloadService>
-}
-
-impl PApi {
-    fn new(download_service: Arc<dyn DownloadService>) -> Self {
-        Self { download_service }
-    }
-
-    pub fn into_arc(self) -> Arc<dyn ProviderApi> {
-        Arc::new(self)
-    }
-}
-
-#[async_trait]
-impl ProviderApi for PApi {
-    fn download_service(&self) -> Arc<dyn DownloadService> {
-        Arc::clone(&self.download_service)
-    }
-
-    async fn queue_download(&self, url: String) -> watch::Receiver<traits::ModDownloadResult> {
-        let x = self.download_service.queue_download(url);
-        x.await
-    }
 }

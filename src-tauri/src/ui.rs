@@ -1,7 +1,7 @@
 use std::sync::Arc;
-use tauri::{ipc::IpcResponse, State};
+use tauri::State;
 
-use crate::{core::{Context as AppContext, ProviderEntry, RegistryError}, providers::{GenericMod, ModExtendedMetadata}, traits::{DiscoveryQuery, DiscoveryResult, GameMetadata}};
+use crate::{core::{Context as AppContext, RegistryError}, traits::{DiscoveryQuery, DiscoveryResult, GameMetadata, ModExtendedMetadata}};
 
 #[tauri::command]
 fn greet() -> String {
