@@ -12,8 +12,8 @@ import {
 import Image from "next/image";
 import type * as React from "react";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/primitives/button";
 import { cn } from "@/lib/styleUtils";
-import { Button } from "./button";
 
 function Dialog({
   ...props

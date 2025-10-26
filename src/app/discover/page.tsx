@@ -1,71 +1,40 @@
 "use client";
 
 import { invoke } from "@tauri-apps/api/core";
-import { DownloadIcon, SearchIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import Input from "@/components/input";
 import ModOverlay from "@/components/modOverlay";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/pagination";
+import Input from "@/components/primitives/input";
+import ModCard from "@/components/ui/modCard";
+import PaginationBar from "@/components/ui/paginationBar";
+import type {
+  DiscoverFilter,
+  DiscoverResult,
+  DiscoveryMeta,
+} from "@/lib/types/discover";
+import type { ExtendedMod, ModTag, ModType } from "@/lib/types/mods";
 
-interface ModType {
-  id: string;
-  name: string;
-  description: string;
-  short_description: string;
-  thumbnail_image: string;
-  user_avatar: string;
-  user_name: string;
-  downloads: string;
-  views: number;
-}
-
-interface ExtendedMod extends ModType {
-  // Add extra fields here
-  header_image: string;
-  caoursel_images: string[];
-  installed: boolean;
-  version?: string;
-}
-
-interface ModTag {
-  id: string;
-  name: string;
-}
-
-interface DiscoverFilter {
-  page?: number;
-  pageSize?: number;
-  tags?: ModTag[];
-  sort?: string;
-}
-
-interface DiscoveryMeta {
-  game_id: string;
-  pagination: PaginationMeta;
-  applied_tags: string[];
-  available_tags?: string[];
-}
-
-interface PaginationMeta {
-  current: number;
-  page_size: number;
-  total_pages: number;
-  total_items: number;
-}
-
-interface DiscoverResult {
-  mods: ModType[];
-  meta: DiscoveryMeta;
-}
+const searchResults = [
+  {
+    name: "BeardLib Mod",
+    author: "BeardLibTeam",
+    downloads: "12,345",
+    delay: "75",
+  },
+  {
+    name: "Another mod",
+    author: "Someone",
+    downloads: "8,900",
+    delay: "150",
+  },
+  {
+    name: "A cool mod",
+    author: "NotNotNotGhoulNotNot",
+    downloads: "5,432",
+    delay: "225",
+  },
+];
 
 const Discover = () => {
   const [mods, setMods] = useState<ModType[]>([]);
@@ -74,6 +43,7 @@ const Discover = () => {
   const [filter, setFilter] = useState<DiscoverFilter>();
   const [activeMod, setActiveMod] = useState<ModOverlay.Props | undefined>();
   const [isLoading, setIsLoading] = useState(true);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   async function paginateTo(page: number) {
     setIsLoading(true);
@@ -172,7 +142,69 @@ const Discover = () => {
             <Input
               placeholder="Search for mods"
               className="h-10 border-border/40 bg-background pl-9 text-sm focus-visible:border-border"
+              autoComplete="off"
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
             />
+
+            {/* AUTOCOMPLETE POPOVER */}
+            <div
+              className={`absolute right-0 left-0 z-20 mt-2 transition-all duration-300 ${
+                isSearchFocused
+                  ? "pointer-events-auto translate-y-0 opacity-100"
+                  : "-translate-y-2 pointer-events-none opacity-0"
+              }`}
+            >
+              {/* Example autocomplete result */}
+              <div className="pointer-events-auto rounded-md border border-border/40 bg-popover p-2 shadow-lg">
+                <div className="flex flex-col gap-2">
+                  {/* Animate each item in with staggered fade-in */}
+                  {searchResults.map((mod, i) => (
+                    <div
+                      key={mod.name}
+                      className="flex cursor-pointer items-center gap-2 rounded p-2 transition hover:bg-muted"
+                      style={{
+                        opacity: isSearchFocused ? 1 : 0,
+                        transform: isSearchFocused
+                          ? "translateY(0)"
+                          : "translateY(8px)",
+                        transition: `opacity 300ms ${mod.delay}ms, transform 300ms ${mod.delay}ms`,
+                      }}
+                    >
+                      <Image
+                        src="https://placehold.co/32x32"
+                        alt="Mod Thumbnail"
+                        width={32}
+                        height={32}
+                        className="h-8 w-8 rounded object-cover"
+                      />
+                      <div>
+                        <div className="font-medium text-foreground text-sm">
+                          {mod.name}
+                        </div>
+                        <div className="text-muted-foreground text-xs">
+                          by {mod.author} &middot; {mod.downloads} downloads
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <p
+                    className="text-muted-foreground text-xs"
+                    style={{
+                      opacity: isSearchFocused ? 1 : 0,
+                      transform: isSearchFocused
+                        ? "translateY(0)"
+                        : "translateY(8px)",
+                      transition: "opacity 300ms 225ms, transform 300ms 225ms",
+                    }}
+                  >
+                    And 15 more...
+                    <br />
+                    You can increase the shown amount in the settings!
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -192,175 +224,32 @@ const Discover = () => {
           ) : (
             <div className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
               {mods.map((mod) => (
-                // This'll get fixed once we move ModCards into their own component
-                // biome-ignore lint/a11y/noStaticElementInteractions: STFU BRUH
-                // biome-ignore lint/a11y/useKeyWithClickEvents: STFU
-                <div
+                <ModCard
                   key={mod.id}
-                  className="group flex min-h-72 cursor-pointer flex-col overflow-hidden rounded-2xl border border-border/30 bg-card/40 transition-all duration-300 hover:border-border/60 hover:shadow-lg"
-                  onClick={() => {
-                    getFurtherInfo(mod.id);
-                  }}
-                >
-                  {/* Image Section */}
-                  <div className="relative aspect-video overflow-hidden bg-muted/30">
-                    <Image
-                      src={
-                        mod.thumbnail_image ?? "https://placehold.co/600x400"
-                      }
-                      alt={mod.name ?? "Unknown mod"}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      // for nextjs happiness
-                      width={0}
-                      height={0}
-                    />
-                    <div className="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-background/80 px-2 py-1 text-foreground/80 text-xs backdrop-blur-sm">
-                      <DownloadIcon className="h-4 w-4 opacity-80" />
-                      <span className="font-medium tabular-nums">
-                        {mod.downloads ?? "?"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Content Section */}
-                  <div className="flex flex-1 flex-col justify-between p-4 sm:p-5">
-                    <div>
-                      <h3 className="mb-1 font-semibold text-base text-foreground leading-tight transition-colors group-hover:text-foreground/90 sm:text-lg">
-                        {mod.name ?? "Unknown mod"}
-                      </h3>
-
-                      <div className="mb-3 flex flex-wrap items-center gap-1 text-muted-foreground text-xs sm:text-sm">
-                        <span>By</span>
-                        <Image
-                          src={
-                            mod.thumbnail_image ??
-                            "https://placehold.co/128x128"
-                          }
-                          alt={mod.user_name ?? "Unknown Author"}
-                          className="mx-1 inline-block h-5 w-5 rounded-full"
-                          // for nextjs happiness
-                          width={0}
-                          height={0}
-                        />
-                        <span className="font-medium text-foreground/80">
-                          {mod.user_name ?? "???"}
-                        </span>
-                      </div>
-
-                      <div className="mb-2 flex flex-wrap gap-2">
-                        {/*TODO: Move to its own component*/}
-                        {/*{mod.category?.map((category) => (*/}
-                        <div
-                          // key={category}
-                          className="rounded border border-border/40 bg-muted/50 px-2 py-0.5 text-xs sm:text-sm"
-                        >
-                          Category
-                        </div>
-                        {/*))}*/}
-                      </div>
-
-                      <p className="line-clamp-3 text-ellipsis text-muted-foreground text-sm transition-colors group-hover:text-foreground/90">
-                        {mod.description ||
-                          "No description provided for this mod"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                  name={mod.name}
+                  thumbnail={mod.thumbnail_image}
+                  username={mod.user_name}
+                  downloads={mod.downloads}
+                  description={mod.description}
+                  categories={[
+                    "Add-on",
+                    "Self-updating",
+                    "BeardLib",
+                    "Overrides",
+                  ]}
+                />
               ))}
             </div>
           )}
-
-          {/*<div className="w-full p-2">*/}
-          {/*</div>*/}
         </div>
 
-        {/*Hacked together pagination because I'm tried*/}
         {meta && (
           <div className="absolute right-0 bottom-6 left-0 opacity-45 transition-all duration-250 ease-in-out hover:pointer-events-auto hover:opacity-100">
-            <Pagination className="absolute bottom-0 left-[35%] mx-auto w-fit rounded-xl border border-border/30 bg-background/95 p-2 shadow-lg">
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    aria-label="Previous page"
-                    className={`rounded-full px-3 py-2 transition-colors ${
-                      meta.pagination.current === 1
-                        ? "cursor-not-allowed opacity-50"
-                        : "hover:bg-muted/30"
-                    }`}
-                    onClick={() => {
-                      if (meta.pagination.current > 1) {
-                        paginateTo(meta.pagination.current - 1);
-                      }
-                    }}
-                    tabIndex={meta.pagination.current === 1 ? -1 : 0}
-                  />
-                </PaginationItem>
-                {Array.from(
-                  { length: meta.pagination.total_pages },
-                  (_, i) => i + 1,
-                ).map((page, _, __) => {
-                  // Only show first, last, current, and neighbors for brevity
-                  const showPage =
-                    page === 1 ||
-                    page === meta.pagination.total_pages ||
-                    Math.abs(page - meta.pagination.current) <= 1;
-                  if (!showPage) {
-                    // Only show ellipsis once between gaps
-                    if (
-                      page === meta.pagination.current - 2 ||
-                      page === meta.pagination.current + 2
-                    ) {
-                      return (
-                        <PaginationItem key={`ellipsis-${page}`}>
-                          <PaginationEllipsis className="mx-1 text-muted-foreground" />
-                        </PaginationItem>
-                      );
-                    }
-                    return null;
-                  }
-                  return (
-                    <PaginationItem key={page}>
-                      <PaginationLink
-                        isActive={page === meta.pagination.current}
-                        href="#"
-                        onClick={() => paginateTo(page)}
-                        className={`rounded-full px-3 py-2 transition-colors ${
-                          page === meta.pagination.current
-                            ? "bg-primary font-bold text-primary-foreground shadow"
-                            : "hover:bg-muted/30"
-                        }`}
-                      >
-                        {page}
-                      </PaginationLink>
-                    </PaginationItem>
-                  );
-                })}
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    aria-label="Next page"
-                    className={`rounded-full px-3 py-2 transition-colors ${
-                      meta.pagination.current === meta.pagination.total_pages
-                        ? "cursor-not-allowed opacity-50"
-                        : "hover:bg-muted/30"
-                    }`}
-                    onClick={async () => {
-                      if (
-                        meta.pagination.current < meta.pagination.total_pages
-                      ) {
-                        paginateTo(meta.pagination.current + 1);
-                      }
-                    }}
-                    tabIndex={
-                      meta.pagination.current === meta.pagination.total_pages
-                        ? -1
-                        : 0
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+            <PaginationBar
+              currentPage={meta.pagination.current}
+              totalPages={meta.pagination.total_pages}
+              onPaginate={paginateTo}
+            />
           </div>
         )}
       </div>
