@@ -41,7 +41,7 @@ function PaginationBar(props: PaginationBar.Props) {
           />
         </PaginationItem>
         {Array.from({ length: props.totalPages }, (_, i) => i + 1).map(
-          (page, _, __) => {
+          (page) => {
             // Only show first, last, current, and neighbors for brevity
             const showPage =
               page === 1 ||
