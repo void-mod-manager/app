@@ -1,4 +1,4 @@
-use crate::{providers::{GenericMod, ModExtendedMetadata}, traits::{DiscoveryError, DiscoveryQuery, DiscoveryResult}};
+use crate:: traits::{DiscoveryError, DiscoveryQuery, DiscoveryResult, ModExtendedMetadata, ModSummary};
 
 // Temporary location
 #[derive(Default, Debug)]
@@ -33,7 +33,7 @@ pub trait ModProvider: Send + Sync {
     async fn discover(&self, query: &DiscoveryQuery) -> Result<DiscoveryResult, DiscoveryError>;
 
     #[deprecated(since = "<COMMIT_HASH>", note = "Use `discover` instead")]
-    async fn discover_mods(&self, game_id: String) -> Vec<GenericMod> {
+    async fn discover_mods(&self, game_id: String) -> Vec<ModSummary> {
         let q = DiscoveryQuery {
             game_id,
             page: Some(1),

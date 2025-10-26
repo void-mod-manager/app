@@ -1,8 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use crate::providers::GenericMod;
-
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SortOrder {
     Relevance,
@@ -49,7 +46,7 @@ pub struct Tag {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DiscoveryResult {
     pub meta: DiscoveryMeta,
-    pub mods: Vec<GenericMod>
+    pub mods: Vec<ModSummary>
 }
 
 #[derive(thiserror::Error, Debug, Clone, Serialize, Deserialize)]
@@ -62,4 +59,40 @@ pub enum DiscoveryError {
     ProviderUnavailable,
     #[error("Internal error: {0}")]
     Internal(String)
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ModSummary {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub short_description: String,
+    pub downloads: u64,
+    pub views: u64,
+    pub likes: u64,
+    pub thumbnail_image: String,
+
+    // For now
+    pub tags: Vec<String>,
+
+    // TODO: Make this authors and use a modAuthors vec
+    pub user_name: String,
+    pub user_avatar: String,
+}
+
+pub struct ModDependency {
+    id: String,
+    name: String,
+    icon: String,
+    installed: bool,
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ModExtendedMetadata {
+    pub header_image: String,
+    pub caoursel_images: Vec<String>,
+    pub version: String,
+    pub installed: bool,
+    pub description: String,
 }
