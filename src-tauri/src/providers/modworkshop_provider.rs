@@ -77,6 +77,9 @@ pub struct GenericMod {
     likes: u64,
     thumbnail_image: String,
 
+    // For now
+    tags: Vec<String>,
+
     // TODO: Make this authors and use a modAuthors vec
     user_name: String,
     user_avatar: String,
@@ -138,7 +141,11 @@ impl ModProvider for ModWorkShopProvider {
                         _ => "https://modworkshop.net/assets/no-preview.webp".to_owned(),
                     },
                     user_name: v["user"]["name"].as_str().unwrap_or("error").to_owned(),
-                    user_avatar: format!("https://storage.modworkshop.net/users/images/{}", v["user"]["avatar"].as_str().unwrap_or("error").to_owned())
+                    user_avatar: format!("https://storage.modworkshop.net/users/images/{}", v["user"]["avatar"].as_str().unwrap_or("error").to_owned()),
+                    tags: v["tags"].as_array().unwrap_or(&vec![])
+                        .iter()
+                        .filter_map(|tag| tag["name"].as_str().map(|s| s.to_string()))
+                        .collect()
                 }
             );
         }
@@ -183,46 +190,6 @@ impl ModProvider for ModWorkShopProvider {
                 _ => {}
             }
         }
-    }
-
-
-    async fn discover_mods(&self, game: String) -> Vec<GenericMod> {
-        let target = "https://api.modworkshop.net/games/1/mods";
-        // We should probably move the calling URL logic to DownloadProvider, or rename it to NetworkProvider, but this is fine for now.
-        let client = reqwest::Client::new();
-        let response = client
-            .get(target)
-            .header(USER_AGENT, "VoidModManager/0.1.0 (+https://github.com/NotGhoull/Void-Mod-Manager)")
-            .send().await.expect("Failed to send request"); // <- We error for now until we finish the API
-        // TODO replace error
-        let txt = response.text().await.expect("Failed to read response");
-        let parsed: Value = serde_json::from_str(&txt).expect("Failed to create reader");
-
-        let mods = parsed["data"].as_array().unwrap();
-        let mut modInfos: Vec<GenericMod> = Vec::new();
-
-        for v in mods {
-            modInfos.push(
-                GenericMod {
-                    name: v["name"].as_str().unwrap_or("error").to_owned(),
-                    id: v["id"].as_i64().unwrap_or(0).to_string().to_owned(),
-                    description: v["desc"].as_str().unwrap_or("error").to_owned(),
-                    short_description: v["short_desc"].as_str().unwrap_or("error").to_owned(),
-                    downloads: v["downloads"].as_u64().unwrap_or(0),
-                    views: v["views"].as_u64().unwrap_or(0),
-                    likes: v["likes"].as_u64().unwrap_or(0),
-                    thumbnail_image: match v["thumbnail"]["file"].as_str() {
-                        Some(file) if !file.is_empty() => format!("https://storage.modworkshop.net/mods/images/{}", file),
-                        _ => "https://modworkshop.net/assets/no-preview.webp".to_owned(),
-                    },
-                    user_name: v["user"]["name"].as_str().unwrap_or("error").to_owned(),
-                    user_avatar: format!("https://storage.modworkshop.net/users/images/{}", v["user"]["avatar"].as_str().unwrap_or("error").to_owned())
-                }
-            );
-        }
-
-        return modInfos;
-
     }
 
     /// This should really be an Option<ModExtendedMetadata> since the service could go down or something

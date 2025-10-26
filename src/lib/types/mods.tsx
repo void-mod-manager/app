@@ -8,6 +8,7 @@ interface ModType {
   user_name: string;
   downloads: string;
   views: number;
+  tags: string[];
 }
 
 interface ExtendedMod extends ModType {

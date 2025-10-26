@@ -223,8 +223,8 @@ const Discover = () => {
             </div>
           ) : (
             <div className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-              {mods.map((mod) => (
-                <ModCard
+              {mods.map((mod, i) => (
+                <div
                   key={mod.id}
                   name={mod.name}
                   thumbnail={mod.thumbnail_image}
