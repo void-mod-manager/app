@@ -119,13 +119,19 @@ function ModOverlay(props: ModOverlay.Props) {
           {/* Left: Cover & Dependencies */}
           <div className="flex flex-1 flex-col gap-6">
             <div className="relative aspect-video max-h-[22rem] w-full overflow-hidden rounded-lg border border-border/40 shadow-lg">
-              <Image
-                src={props.images[0]}
-                fill
-                className="max-h-96 object-cover"
-                alt="mod cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
+              {props.images && props.images.length > 0 && props.images[0] ? (
+                <Image
+                  src={props.images[0]}
+                  fill
+                  className="max-h-96 object-cover"
+                  alt="mod cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-neutral-800 text-lg text-white/60">
+                  No cover image available
+                </div>
+              )}
               <div className="relative top-[90%] left-[50%] h-[15px] w-[30px] rounded-sm bg-white"></div>
             </div>
             <div className="rounded-md border border-border/40 bg-neutral-900/70 p-4 text-muted-foreground">

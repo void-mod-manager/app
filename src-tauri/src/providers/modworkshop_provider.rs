@@ -1,8 +1,8 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 use log::info;
 use reqwest::header::{CONTENT_TYPE, USER_AGENT};
 use serde_json::{json, Value};
-use tauri::Url;
+use reqwest::Url;
 use crate::{core::ProviderApi, traits::{DiscoveryError, DiscoveryMeta, DiscoveryQuery, DiscoveryResult, ModExtendedMetadata, ModProvider, ModSummary, PaginationMeta, SortOrder}};
 
 
@@ -29,8 +29,12 @@ impl ModWorkShopProvider {
 
     fn build_url(&self, query: &DiscoveryQuery) -> Result<Url, DiscoveryError> {
         // let id = self.map_game_id(&query.game_id)?;
+        let game = self.api.context()
+            .get_game_provider(&query.game_id)
+            .map_err(|e| DiscoveryError::InvalidQuery(format!("ID {} not loaded", query.game_id)))?;
+        let game_id = game.get_external_id();
 
-        let base = format!("https://api.modworkshop.net/games/{}/mods", query.game_id);
+        let base = format!("https://api.modworkshop.net/games/{}/mods", game_id);
         let mut url = Url::parse(&base).map_err(|e| DiscoveryError::Internal(e.to_string()))?;
 
         {
@@ -52,7 +56,7 @@ impl ModWorkShopProvider {
         let obj = root.as_object_mut().expect("Root must be an object");
 
         if let Some(page) = query.page {
-            obj.insert("page".into(), Value::Number(page.into()));
+            obj.insert("page".into(), json!(page));
         }
 
         Ok(root)
@@ -66,22 +70,39 @@ impl ModProvider for ModWorkShopProvider {
     async fn discover(&self, query: &DiscoveryQuery) -> Result<DiscoveryResult, DiscoveryError> {
         let target = self.build_url(&query)?;
         dbg!(&target);
-        // We should probably move the calling URL logic to DownloadProvider, or rename it to NetworkProvider, but this is fine for now.
-        let client = reqwest::Client::new();
         let body = self.build_body(&query).expect("Failed to build body");
-        dbg!(&body);
+
+        // We should probably move the calling URL logic to DownloadProvider, or rename it to NetworkProvider, but this is fine for now.
+        let client = reqwest::Client::builder()
+            .timeout(Duration::from_secs(30))
+            .build()
+            .map_err(|e| DiscoveryError::Internal(e.to_string()))?;
+
         let response = client
             .get(target)
             .json(&body)
             .header(CONTENT_TYPE, "application/json")
             .header(USER_AGENT, "VoidModManager/0.1.0 (+https://github.com/NotGhoull/Void-Mod-Manager)")
-            .send().await.expect("Failed to send request"); // <- We error for now until we finish the API
-        // TODO replace error
-        let txt = response.text().await.expect("Failed to read response");
-        let parsed: Value = serde_json::from_str(&txt).expect("Failed to create reader");
+            .send()
+            .await
+            .map_err(|e| DiscoveryError::Network(e.to_string()))?;
 
-        let mods = parsed["data"].as_array().unwrap();
-        let meta = parsed["meta"].as_object().unwrap();
+
+        let txt = response
+            .text()
+            .await
+            .map_err(|e| DiscoveryError::Network(e.to_string()))?;
+
+        let parsed: Value = serde_json::from_str(&txt).map_err(|e| DiscoveryError::Internal(e.to_string()))?;
+
+        let mods = parsed["data"]
+            .as_array()
+            .ok_or_else(|| DiscoveryError::Internal("Malformed response: Missing data[]".into()))?;
+
+        let meta = parsed["meta"]
+            .as_object()
+            .ok_or_else(|| DiscoveryError::Internal("malformed response: Missing meta{}".into()))?;
+
         let mut mod_infos: Vec<ModSummary> = Vec::new();
 
         for v in mods {
@@ -99,7 +120,11 @@ impl ModProvider for ModWorkShopProvider {
                         _ => "https://modworkshop.net/assets/no-preview.webp".to_owned(),
                     },
                     user_name: v["user"]["name"].as_str().unwrap_or("error").to_owned(),
-                    user_avatar: format!("https://storage.modworkshop.net/users/images/{}", v["user"]["avatar"].as_str().unwrap_or("error").to_owned()),
+                    user_avatar: match v["user"]["avatar"].as_str() {
+                        Some(avatar) if avatar.starts_with("http://") || avatar.starts_with("https://") => avatar.to_owned(),
+                        Some(avatar) => format!("https://storage.modworkshop.net/users/images/{}", avatar),
+                        _ => "error".to_owned(),
+                    },
                     tags: v["tags"].as_array().unwrap_or(&vec![])
                         .iter()
                         .filter_map(|tag| tag["name"].as_str().map(|s| s.to_string()))
@@ -112,7 +137,7 @@ impl ModProvider for ModWorkShopProvider {
         let r = DiscoveryResult {
             meta: DiscoveryMeta {
                 provider_id: self.register(),
-                game_id: 1.to_string(),
+                game_id: query.game_id.clone(),
                 pagination: PaginationMeta {
                     current: meta["current_page"].as_u64().unwrap_or(1),
                     page_size: meta["per_page"].as_u64().unwrap_or(50),

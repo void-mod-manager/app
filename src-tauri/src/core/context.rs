@@ -64,6 +64,7 @@ impl ContextBuilder {
     }
 }
 
+
 pub struct Context {
     mod_providers: Arc<HashMap<String, ProviderEntry>>,
     game_providers: Arc<HashMap<String, GameEntry>>,
@@ -77,6 +78,14 @@ impl Context {
         self.mod_providers
             .get(&id)
             .map(|e| Arc::clone(&e.provider))
+            .ok_or_else(|| RegistryError::NotFound(id))
+    }
+
+    pub fn get_game_provider(&self, id: &str) -> Result<Arc<dyn GameProvider + 'static>, RegistryError> {
+        let id = normalize_id(id)?;
+        self.game_providers
+            .get(&id)
+            .map(|g| Arc::clone(&g.game) as Arc<dyn GameProvider + 'static>)
             .ok_or_else(|| RegistryError::NotFound(id))
     }
 
@@ -122,7 +131,7 @@ impl Context {
         let id = normalize_id(id)?;
         match self.game_providers.get(&id) {
             Some(game_entry) => {
-                let metadata = game_entry.game.metadata();
+                let metadata = game_entry.game.metadata().clone();
                 Ok(metadata)
             }
             None => Err(RegistryError::NotFound(id)),
@@ -131,15 +140,18 @@ impl Context {
 
     pub async fn get_extended_info(&self, id: &str) -> Result<ModExtendedMetadata, RegistryError> {
             let id = normalize_id(id)?;
-            let provider = self.active_game_required_provider().unwrap();
+            let provider = self
+                .active_game_required_provider()
+                .ok_or_else(|| RegistryError::NotFound("No active game".to_string()))?;
+
             let provider_entry = self
                 .mod_providers
                 .get(&provider)
-                .ok_or(RegistryError::NotFound(provider.clone()))?;
+                .ok_or_else(|| RegistryError::NotFound(provider.clone()))?;
             let provider = Arc::clone(&provider_entry.provider);
 
             Ok(provider.get_extended_mod(&id).await)
-        }
+    }
 
     #[cfg(debug_assertions)]
     pub fn debug_dump(&self) {

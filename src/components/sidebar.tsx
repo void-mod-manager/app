@@ -85,20 +85,27 @@ const Sidebar = () => {
 
   useEffect(() => {
     (async () => {
-      const gameIds = await invoke<string[]>("list_games");
-      console.debug("[debug] Found loaded providers", gameIds);
+      try {
+        const gameIds = await invoke<string[]>("list_games");
+        console.debug("[debug] Found loaded providers", gameIds);
 
-      const newGames: GameMetadata[] = [];
-      for (const id of gameIds) {
-        const data = await invoke<GameMetadata>("get_metadata_for", { id: id });
-        newGames.push(data);
+        const newGames: GameMetadata[] = [];
+        for (const id of gameIds) {
+          const data = await invoke<GameMetadata>("get_metadata_for", {
+            id: id,
+          });
+          newGames.push(data);
+        }
+
+        setGames(newGames);
+        console.debug("[debug] Loaded games", newGames);
+
+        // Get the active provider
+        setActiveGameId(await invoke<string | undefined>("get_active_game"));
+      } catch (e) {
+        alert("Failed to load game providers");
+        console.error("Failed to load game providers ", e);
       }
-
-      setGames(newGames);
-      console.debug("[debug] Loaded games", newGames);
-
-      // Get the active provider
-      setActiveGameId(await invoke<string | undefined>("get_active_game"));
     })();
   }, []);
 

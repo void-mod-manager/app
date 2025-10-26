@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use tauri::State;
+use tauri::{State};
 
 use crate::{core::{Context as AppContext, RegistryError}, traits::{DiscoveryQuery, DiscoveryResult, GameMetadata, ModExtendedMetadata}};
 
@@ -26,17 +26,25 @@ fn get_active_game(state: State<'_, Arc<AppContext>>) -> Option<String> {
 
 #[tauri::command]
 async fn get_discovery_mods(state: State<'_, Arc<AppContext>>, page: Option<u32>) -> Result<DiscoveryResult, RegistryError> {
-    let provider_id = state.active_game_required_provider().expect("Select a game first");
+    let provider_id = state
+        .active_game_required_provider()
+        .ok_or_else(|| RegistryError::NotFound("No active game selected".into()))?;
+
     let provider = state.get_mod_provider(&provider_id)?;
+    let game_id = state
+        .active_game()
+        .ok_or_else(|| RegistryError::NotFound("No active game selected".into()))?;
+
 
     let result = provider.discover(&DiscoveryQuery {
-        game_id: "1".into(),
+        game_id,
         page,
         page_size: None,
         search: None,
         tags: None,
         sort: None
-    }).await.map_err(|e| RegistryError::NotFound(format!("Discovery error: {}", e)));
+    })
+    .await.map_err(|e| RegistryError::NotFound(format!("Discovery error: {e}")));
 
     result
 }

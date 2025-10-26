@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fmt::Debug, sync::Arc};
 use serde::{Deserialize, Serialize};
 
 pub enum GameProviderError {
@@ -31,4 +31,5 @@ pub trait GameProvider: Send + Sync {
     fn game_id(&self) -> &str;
     fn mod_provider_id(&self) -> &str;
     fn metadata(&self) -> GameMetadata;
+    fn get_external_id(&self) -> &str;
 }

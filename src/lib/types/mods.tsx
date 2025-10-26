@@ -14,7 +14,7 @@ interface ModType {
 interface ExtendedMod extends ModType {
   // Add extra fields here
   header_image: string;
-  caoursel_images: string[];
+  carousel_images: string[];
   installed: boolean;
   version?: string;
 }

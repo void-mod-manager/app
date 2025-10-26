@@ -30,4 +30,7 @@ impl GameProvider for Payday2Provider {
         }
     }
 
+    fn get_external_id(&self) -> &str {
+        "1"
+    }
 }

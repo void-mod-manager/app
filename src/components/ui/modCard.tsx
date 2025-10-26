@@ -49,10 +49,9 @@ function ModCard(props: ModCard.Props) {
         <Image
           src={props.thumbnail}
           alt={props.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          // for nextjs happiness
-          width={0}
-          height={0}
+          fill
+          sizes="(min-width: 640px) 33vw, 100vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-background/80 px-2 py-1 text-foreground/80 text-xs backdrop-blur-sm">
           <DownloadIcon className="h-4 w-4 opacity-80" />

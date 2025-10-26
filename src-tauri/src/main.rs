@@ -39,26 +39,19 @@ async fn main() {
     let api = CoreProviderApi::new(shared_download_service).into_arc();
 
     let mwsprovider = Arc::new(ModWorkShopProvider::new(api.clone()));
-    let _ = ctx_builder
-        .register_mod_provider(&mwsprovider.register(), mwsprovider, ProviderSource::Core);
+    ctx_builder
+        .register_mod_provider(&mwsprovider.register(), mwsprovider, ProviderSource::Core)
+        .expect("failed to register Modworkshop provider!");
 
     let payday_2_game_provider = Arc::new(Payday2Provider::new());
-    let _ = ctx_builder
-        .register_game_provider(payday_2_game_provider, ProviderSource::Core);
+    ctx_builder
+        .register_game_provider(payday_2_game_provider, ProviderSource::Core)
+        .expect("failed to register PAYDAY 2 game Provider!");
 
     let ctx = Arc::new(ctx_builder.freeze());
+    api.set_context(Arc::clone(&ctx));
     ctx.debug_dump();
     ui::run(ctx);
-
-    // let shared_download_service: Arc<dyn DownloadService> = Arc::new(DefaultDownloadService::new());
-
-    // let api = PApi::new(shared_download_service).into_arc();
-    // let loaded_provider = ModWorkShopProvider::new(Arc::clone(&api));
-
-    // run()
-
-    // dbg!(loadedProvider.configure());
-    // loaded_provider.download_mod("mod_id".to_string()).await;
 }
 
 #[cfg(target_os = "linux")]

@@ -47,12 +47,18 @@ const Discover = () => {
 
   async function paginateTo(page: number) {
     setIsLoading(true);
-    const mods = await invoke<DiscoverResult>("get_discovery_mods", {
-      page,
-    });
-    setMods(mods.mods);
-    setMeta(mods.meta);
-    setIsLoading(false);
+    try {
+      const mods = await invoke<DiscoverResult>("get_discovery_mods", {
+        page,
+      });
+      setMods(mods.mods);
+      setMeta(mods.meta);
+    } catch (e) {
+      alert("Failed to paginate discovery mods");
+      console.error("Pagination failed", e);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   async function getFurtherInfo(id: string) {
@@ -78,7 +84,7 @@ const Discover = () => {
       name: merged.name,
       // Until we support multi-user projects
       authors: [{ name: merged.user_name, image: merged.user_avatar }],
-      images: merged.caoursel_images,
+      images: merged.carousel_images,
       description: merged.description,
       banner: merged.header_image,
       version:
@@ -97,7 +103,7 @@ const Discover = () => {
 
   useEffect(() => {
     const handle = () => {
-      console.debug("[debug] Game changed, event recieved");
+      console.debug("[debug] Game changed, event received");
     };
 
     window.addEventListener("gameChanged", handle);
@@ -109,12 +115,18 @@ const Discover = () => {
 
   useEffect(() => {
     (async () => {
-      const mods = await invoke<DiscoverResult>("get_discovery_mods");
-      setMods(mods.mods);
-      setMeta(mods.meta);
-      console.debug("Got meta!", mods.meta);
-      console.debug("Got mods", mods);
-      setIsLoading(false);
+      try {
+        const res = await invoke<DiscoverResult>("get_discovery_mods");
+        setMods(res.mods);
+        setMeta(res.meta);
+        console.debug("Got meta!", res.meta);
+        console.debug("Got mods", res);
+      } catch (e) {
+        alert("Mod loading failed.");
+        console.error("Failed to load mods ", e);
+      } finally {
+        setIsLoading(false);
+      }
     })();
   }, []);
 
