@@ -1,5 +1,6 @@
 import { DownloadIcon } from "lucide-react";
 import Image from "next/image";
+import { toHumanReadable } from "@/lib/numbers";
 import FilterTag from "./filterTag";
 
 // biome-ignore lint/correctness/noUnusedVariables: Is used
@@ -10,6 +11,7 @@ namespace ModCard {
     downloads: string;
     description: string;
     username: string;
+    avatar: string;
 
     categories?: string[];
 
@@ -54,7 +56,9 @@ function ModCard(props: ModCard.Props) {
         />
         <div className="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-background/80 px-2 py-1 text-foreground/80 text-xs backdrop-blur-sm">
           <DownloadIcon className="h-4 w-4 opacity-80" />
-          <span className="font-medium tabular-nums">{props.downloads}</span>
+          <span className="font-medium tabular-nums">
+            {toHumanReadable(Number(props.downloads))}
+          </span>
         </div>
       </div>
 
@@ -68,7 +72,7 @@ function ModCard(props: ModCard.Props) {
           <div className="mb-3 flex flex-wrap items-center gap-1 text-muted-foreground text-xs sm:text-sm">
             <span>By</span>
             <Image
-              src={props.thumbnail}
+              src={props.avatar}
               alt={props.username}
               className="mx-1 inline-block h-5 w-5 rounded-full"
               // for nextjs happiness

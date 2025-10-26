@@ -13,6 +13,7 @@ import Image from "next/image";
 import type * as React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/primitives/button";
+import { toHumanReadable } from "@/lib/numbers";
 import { cn } from "@/lib/styleUtils";
 
 function Dialog({
@@ -312,7 +313,9 @@ function ModOverlay(props: ModOverlay.Props) {
                   <DownloadIcon className="size-4" />
                   Downloads
                 </span>
-                <p className="font-semibold text-lg">{props.downloads}</p>
+                <p className="font-semibold text-lg">
+                  {toHumanReadable(Number(props.downloads))}
+                </p>
               </div>
               <div className="flex flex-1 flex-col items-start rounded-md border border-border/40 bg-neutral-900/70 p-4">
                 <span className="mb-1 flex items-center gap-2 font-medium text-muted-foreground text-sm">

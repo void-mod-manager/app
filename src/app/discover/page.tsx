@@ -237,6 +237,7 @@ const Discover = () => {
                     name={mod.name}
                     thumbnail={mod.thumbnail_image}
                     username={mod.user_name}
+                    avatar={mod.user_avatar}
                     downloads={mod.downloads}
                     description={mod.description}
                     categories={mod.tags ?? []}
