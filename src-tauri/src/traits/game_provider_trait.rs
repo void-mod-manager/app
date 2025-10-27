@@ -1,5 +1,7 @@
-use std::{fmt::Debug, sync::Arc};
+use std::{fmt::Debug, path::PathBuf, sync::Arc};
 use serde::{Deserialize, Serialize};
+
+use anyhow::Result;
 
 pub enum GameProviderError {
     MissingBuilder(String),
@@ -32,4 +34,5 @@ pub trait GameProvider: Send + Sync {
     fn mod_provider_id(&self) -> &str;
     fn metadata(&self) -> GameMetadata;
     fn get_external_id(&self) -> &str;
+    fn install_mod(&self, path: &PathBuf) -> Result<()>;
 }

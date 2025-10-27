@@ -1,6 +1,8 @@
 "use client";
 
+import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/primitives/button";
 import { useViewManager } from "@/lib/viewSystem/useViewManager";
 import { View } from "@/lib/viewSystem/View";
 
@@ -62,41 +64,53 @@ export default function DebugPage() {
 
   return (
     <>
-      <View name="loading" isActive={isActive}>
-        <div>
-          <p>Loading mods...</p>
-        </div>
-      </View>
+      <div id="debug_test_download_service" className="mb-4">
+        <Button
+          onClick={() => {
+            invoke("download_mod", { id: "1" });
+          }}
+        >
+          Download mod
+        </Button>
+      </div>
 
-      <View name="modSelect" isActive={isActive}>
-        <div>
-          <p>Mod select view</p>
-          {mods && mods.length > 0 ? (
-            <ul>
-              {mods.map((m) => (
-                <li key={m.name}>{m.name}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>No mods loaded.</p>
-          )}
-        </div>
-      </View>
+      <div>
+        <View name="loading" isActive={isActive}>
+          <div>
+            <p>Loading mods...</p>
+          </div>
+        </View>
 
-      <View name="missingMods" isActive={isActive}>
-        <div>
-          {error ? (
-            <>
-              <p>Failed to load mods.</p>
-              <pre style={{ color: "red" }}>{error}</pre>
-            </>
-          ) : mods?.length === 0 ? (
-            <p>No mods found for this game.</p>
-          ) : (
-            <p>Mods unavailable.</p>
-          )}
-        </div>
-      </View>
+        <View name="modSelect" isActive={isActive}>
+          <div>
+            <p>Mod select view</p>
+            {mods && mods.length > 0 ? (
+              <ul>
+                {mods.map((m) => (
+                  <li key={m.name}>{m.name}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>No mods loaded.</p>
+            )}
+          </div>
+        </View>
+
+        <View name="missingMods" isActive={isActive}>
+          <div>
+            {error ? (
+              <>
+                <p>Failed to load mods.</p>
+                <pre style={{ color: "red" }}>{error}</pre>
+              </>
+            ) : mods?.length === 0 ? (
+              <p>No mods found for this game.</p>
+            ) : (
+              <p>Mods unavailable.</p>
+            )}
+          </div>
+        </View>
+      </div>
     </>
   );
 }

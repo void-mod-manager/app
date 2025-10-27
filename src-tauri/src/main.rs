@@ -6,6 +6,7 @@ mod binary;
 mod ui;
 
 use log::{info, trace, warn};
+use tracing_log::LogTracer;
 use traits::ModProvider;
 use std::{env, sync::Arc};
 
@@ -13,7 +14,8 @@ use crate::{core::{ContextBuilder, CoreProviderApi, DefaultDownloadService, Down
 
 #[tokio::main]
 async fn main() {
-
+    LogTracer::init().expect("Failed to init logging");
+    tracing_subscriber::fmt().try_init().ok();
     #[cfg(target_os = "linux")]
     {
         info!("Running under the penguin");

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use tauri::{State};
 
-use crate::{core::{Context as AppContext, RegistryError}, traits::{DiscoveryQuery, DiscoveryResult, GameMetadata, ModExtendedMetadata}};
+use crate::{core::{Context as AppContext, RegistryError}, traits::{DiscoveryQuery, DiscoveryResult, GameMetadata, ModDownloadResult, ModExtendedMetadata}};
 
 #[tauri::command]
 fn greet() -> String {
@@ -62,30 +62,51 @@ async fn list_games(state: State<'_, Arc<AppContext>>) -> Result<Vec<String>, ()
         .collect())
 }
 
+#[tauri::command]
+async fn download_mod(state: State<'_, Arc<AppContext>>, id: String) -> Result<(), ()> {
+    let provider_id = state.active_game_required_provider().expect("msg");
+    let mod_provider = state.get_mod_provider(&provider_id).expect("msg");
+    let path = mod_provider.download_mod(id).await;
+
+    let game_prodiver_id = state.active_game().expect("msg");
+    let game_provider = state.get_game_provider(&game_prodiver_id).expect("msg");
+
+    dbg!(&path);
+
+    match path {
+        ModDownloadResult::Completed(ref p) => game_provider.install_mod(p).expect("msg"),
+        _ => {
+            println!("[dbg] Dropped mod result (fail)")
+        }
+    }
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run(ctx: Arc<AppContext>) {
   tauri::Builder::default()
     .setup(|app| {
-      if cfg!(debug_assertions) {
-        app.handle().plugin(
-          tauri_plugin_log::Builder::default()
-            .level(log::LevelFilter::Info)
-            .targets(
-                [
-                tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
-                tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview),
-                tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir {
-                    file_name: Some(String::from("latest.log")),
+      // if cfg!(debug_assertions) {
+      //   app.handle().plugin(
+      //     tauri_plugin_log::Builder::default()
+      //       .level(log::LevelFilter::Info)
+      //       .targets(
+      //           [
+      //           tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
+      //           tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview),
+      //           tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir {
+      //               file_name: Some(String::from("latest.log")),
 
-                })
-                ])
-            .build(),
-        )?;
-      }
+      //           })
+      //           ])
+      //       .build(),
+      //   )?;
+      // }
       Ok(())
     })
     .manage(ctx)
-    .invoke_handler(tauri::generate_handler![greet, list_games, get_metadata_for, get_discovery_mods, set_active_game, get_active_game, get_extended_info])
+    .invoke_handler(tauri::generate_handler![greet, list_games, get_metadata_for, get_discovery_mods, set_active_game, get_active_game, get_extended_info, download_mod])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

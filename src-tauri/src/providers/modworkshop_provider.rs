@@ -167,7 +167,7 @@ impl ModProvider for ModWorkShopProvider {
                 InProgress(p) => {
                     info!("Progress {}", p);
                 }
-                Completed => return Completed,
+                Completed(p) => return Completed(p.clone()),
                 Failed(e) => return Failed(e.clone()),
                 Cancelled => return Cancelled,
                 _ => {}

@@ -1,5 +1,4 @@
-use std::{env::temp_dir, path::PathBuf};
-
+use std::{path::PathBuf};
 use async_trait::async_trait;
 use futures_util::StreamExt;
 use log::{debug, error, info};
@@ -33,6 +32,7 @@ impl DefaultDownloadService {
 
         // Spawn a background task to process the queue
         tokio::spawn(async move {
+            // emit `start_download` { mod_id }
             while let Some(download) = queue_rx.recv().await {
                 Self::process_download(download).await;
             }
@@ -64,7 +64,19 @@ impl DefaultDownloadService {
             .filter(|name| !name.is_empty())
             .unwrap_or("unknown.zip");
 
-        let mut path: PathBuf = temp_dir().into();
+        // let mut path: PathBuf = temp_dir().into();
+        let mut path: PathBuf = dirs::data_local_dir()
+            .unwrap_or_else(|| PathBuf::from("/tmp"))
+            .join("me.ghoul.void_mod_manager")
+            .join("downloads");
+
+        // Ensure the directory exists
+        if let Err(e) = std::fs::create_dir_all(&path) {
+            let _ = progress.send(ModDownloadResult::Failed(e.to_string()));
+            error!("Error creating directory {}", e.to_string());
+            return;
+        }
+
         path.push(fname);
 
         let mut file = match File::create(&path).await {
@@ -90,6 +102,7 @@ impl DefaultDownloadService {
                     downloaded += bytes.len() as u64;
                     if total_size > 0 {
                         let percent = ((downloaded as f64 / total_size as f64) * 100.0).round() as u8;
+                        // Emit here `download_progress` { progress: 0.23 }
                         let _ = progress.send(ModDownloadResult::InProgress(percent));
                         debug!("Downloaded {}!", percent);
                     }
@@ -102,7 +115,8 @@ impl DefaultDownloadService {
             }
         }
         info!("Download completed, saved to {:#?}", file);
-        let _ = progress.send(ModDownloadResult::Completed);
+        // emit `resolve_download` { mod_id }
+        let _ = progress.send(ModDownloadResult::Completed(path));
     }
 
 }

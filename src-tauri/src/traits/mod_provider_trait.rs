@@ -1,3 +1,5 @@
+use std::path::{Path, PathBuf};
+
 use crate:: traits::{DiscoveryError, DiscoveryQuery, DiscoveryResult, ModExtendedMetadata, ModSummary};
 
 // Temporary location
@@ -10,10 +12,11 @@ pub struct ModProviderFeatures {
 }
 
 // Temporary location
+#[derive(Debug, Clone)]
 pub enum ModDownloadResult {
     Failed(String), // An optional error message
     InProgress(u8), // Should be between 1 and 100, we don't need more than a u8 tho
-    Completed,
+    Completed(PathBuf),
     Cancelled,
      // This would be if the user is missing permisisons or something
     CannotComplete(String)
