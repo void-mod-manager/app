@@ -15,7 +15,7 @@ use crate::{core::{ContextBuilder, CoreProviderApi, DefaultDownloadService, Down
 #[tokio::main]
 async fn main() {
     LogTracer::init().expect("Failed to init logging");
-    tracing_subscriber::fmt().try_init().ok();
+    tracing_subscriber::fmt().with_max_level(tracing::Level::DEBUG).try_init().ok();
     #[cfg(target_os = "linux")]
     {
         info!("Running under the penguin");
