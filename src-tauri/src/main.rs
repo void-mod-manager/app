@@ -36,9 +36,8 @@ async fn main() {
 
     let mut ctx_builder = ContextBuilder::new();
 
-
-    let shared_download_service: Arc<dyn DownloadService> = Arc::new(DefaultDownloadService::new());
-    let api = CoreProviderApi::new(shared_download_service).into_arc();
+    let download_service = Arc::new(DefaultDownloadService::new());
+    let api = CoreProviderApi::new(download_service.clone()).into_arc();
 
     let mwsprovider = Arc::new(ModWorkShopProvider::new(api.clone()));
     ctx_builder
@@ -53,7 +52,7 @@ async fn main() {
     let ctx = Arc::new(ctx_builder.freeze());
     api.set_context(Arc::clone(&ctx));
     ctx.debug_dump();
-    ui::run(ctx);
+    ui::run(ctx, download_service);
 }
 
 #[cfg(target_os = "linux")]

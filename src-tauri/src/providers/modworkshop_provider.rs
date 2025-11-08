@@ -3,6 +3,7 @@ use log::info;
 use reqwest::header::{CONTENT_TYPE, USER_AGENT};
 use serde_json::{json, Value};
 use reqwest::Url;
+use tracing::trace;
 use crate::{core::ProviderApi, traits::{DiscoveryError, DiscoveryMeta, DiscoveryQuery, DiscoveryResult, ModExtendedMetadata, ModProvider, ModSummary, PaginationMeta, SortOrder}};
 
 
@@ -165,7 +166,7 @@ impl ModProvider for ModWorkShopProvider {
             }
             match &*rx.borrow() {
                 InProgress(p) => {
-                    info!("Progress {}", p);
+                    trace!("Progress {}", p);
                 }
                 Completed(p) => return Completed(p.clone()),
                 Failed(e) => return Failed(e.clone()),

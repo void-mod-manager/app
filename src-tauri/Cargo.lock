@@ -14,6 +14,7 @@ dependencies = [
  "humantime",
  "log",
  "nvml-wrapper",
+ "once_cell",
  "reqwest",
  "serde",
  "serde_json",
