@@ -1,7 +1,8 @@
 use std::sync::Arc;
 use tauri::{State};
 
-use crate::{core::{Context as AppContext, RegistryError}, traits::{DiscoveryQuery, DiscoveryResult, GameMetadata, ModDownloadResult, ModExtendedMetadata}};
+use crate::{core::{Context as AppContext, DefaultDownloadService, RegistryError}, traits::{DiscoveryQuery, DiscoveryResult, GameMetadata, ModDownloadResult, ModExtendedMetadata}};
+use crate::core::DownloadService;
 
 #[tauri::command]
 fn greet() -> String {
@@ -84,28 +85,14 @@ async fn download_mod(state: State<'_, Arc<AppContext>>, id: String) -> Result<(
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run(ctx: Arc<AppContext>) {
+pub fn run(ctx: Arc<AppContext>, download_service: Arc<DefaultDownloadService>) {
   tauri::Builder::default()
-    .setup(|app| {
-      // if cfg!(debug_assertions) {
-      //   app.handle().plugin(
-      //     tauri_plugin_log::Builder::default()
-      //       .level(log::LevelFilter::Info)
-      //       .targets(
-      //           [
-      //           tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
-      //           tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview),
-      //           tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir {
-      //               file_name: Some(String::from("latest.log")),
-
-      //           })
-      //           ])
-      //       .build(),
-      //   )?;
-      // }
-      Ok(())
+    .setup(move |app| {
+        download_service.set_handle(app.handle().clone());
+        Ok(())
     })
     .manage(ctx)
+    // .manage(download_service)
     .invoke_handler(tauri::generate_handler![greet, list_games, get_metadata_for, get_discovery_mods, set_active_game, get_active_game, get_extended_info, download_mod])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

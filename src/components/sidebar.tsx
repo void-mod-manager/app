@@ -3,6 +3,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import {
   BugIcon,
+  DownloadIcon,
   LibraryIcon,
   type LucideIcon,
   SearchIcon,
@@ -42,6 +43,12 @@ const navItems: NavItem[] = [
     label: "Discover",
     path: "/discover",
     icon: SearchIcon,
+  },
+  {
+    id: "downloads" as const,
+    label: "Downloads",
+    path: "/downloads",
+    icon: DownloadIcon,
   },
   {
     id: "settings" as const,
