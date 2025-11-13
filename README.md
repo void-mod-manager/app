@@ -73,7 +73,7 @@ WIP
 
 ## License
 
-Distributed under the GNU General Public License v3. See LICENSE.txt for more information
+Distributed under the GNU General Public License v3. See LICENSE.md for more information
 
 ## Contact
 
