@@ -1,8 +1,11 @@
 <a id="readme-top"></a>
 
-![GitHub contributors](https://img.shields.io/github/contributors/NotGhoull/void-mod-manager)
-![GitHub forks](https://img.shields.io/github/forks/notghoull/void-mod-manager)
-![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/notghoull/void-mod-manager)
+[![License: GPLv3](https://img.shields.io/badge/licence-GPLv3-blue.svg?style=for-the-badge)](/LICENCE.md)
+[![Supported Games](https://img.shields.io/badge/supported_games-yellow.svg?style=for-the-badge)](https://github.com/void-mod-manager/providers)
+[![GitHub Commits](https://img.shields.io/github/commit-activity/m/void-mod-manager/app?label=commits&style=for-the-badge)](https://github.com/void-mod-manager/app/commits)
+[![GitHub Issues](https://img.shields.io/github/issues/void-mod-manager/app?style=for-the-badge)](https://github.com/void-mod-manager/app/issues)
+[![GitHub Contributors](https://img.shields.io/github/contributors/void-mod-manager/app?style=for-the-badge)](https://github.com/void-mod-manager/app/graphs/contributors)
+[![GitHub Forks](https://img.shields.io/github/forks/void-mod-manager/app?style=for-the-badge)](https://github.com/void-mod-manager/app/forks)
 
 <!-- TABLE OF CONTENTS -->
 <details>
