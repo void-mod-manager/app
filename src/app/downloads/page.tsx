@@ -12,7 +12,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/primitives/button";
 import Input from "@/components/primitives/input";
-import { getTauRCP } from "@/lib/taurpc/useTaurpc";
+import { getTauRPC } from "@/lib/taurpc/useTaurpc";
 
 type DownloadStatus =
   | "queued"
@@ -89,8 +89,8 @@ const DownloadsPage = () => {
             d.sizeBytes ?? 10 * 1024 * 1024 + Math.random() * 150 * 1024 * 1024,
         }));
         startedCount = toStart.length;
+        const rpc = getTauRPC();
         toStart.forEach((item) => {
-          const rpc = getTauRCP();
           rpc.download_mod(item.id).catch((e) => {
             console.error(
               "Failed to initiate backend download for",
@@ -234,7 +234,7 @@ const DownloadsPage = () => {
         },
       ]);
       // Fire backend download call
-      const rpc = getTauRCP();
+      const rpc = getTauRPC();
       rpc
         .download_mod(id)
         .catch((e) =>

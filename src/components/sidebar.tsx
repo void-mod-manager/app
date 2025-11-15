@@ -14,7 +14,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createTauRPCProxy, type GameMetadata } from "@/generated/types";
 import { cn } from "@/lib/styleUtils";
-import { getTauRCP } from "@/lib/taurpc/useTaurpc";
+import { getTauRPC } from "@/lib/taurpc/useTaurpc";
 import {
   Select,
   SelectContent,
@@ -74,7 +74,7 @@ const Sidebar = () => {
 
   async function handleGameChange(newGame: string) {
     console.debug("Game changed!");
-    const rpc = getTauRCP();
+    const rpc = getTauRPC();
     await rpc.set_active_game(newGame);
     setActiveGameId(newGame);
     const event = new CustomEvent("gameChanged");
@@ -83,16 +83,14 @@ const Sidebar = () => {
 
   useEffect(() => {
     (async () => {
-      const rpc = getTauRCP();
+      const rpc = getTauRPC();
       try {
         const gameIds = await rpc.list_games();
         console.debug("[debug] Found loaded providers", gameIds);
 
-        const newGames: GameMetadata[] = [];
-        for (const id of gameIds) {
-          const data = await rpc.get_metadata_for(id);
-          newGames.push(data);
-        }
+        const newGames = await Promise.all(
+          gameIds.map((id) => rpc.get_metadata_for(id)),
+        );
 
         setGames(newGames);
         console.debug("[debug] Loaded games", newGames);

@@ -12,7 +12,7 @@ import type {
   ModExtendedMetadata,
   ModSummary,
 } from "@/generated/types";
-import { getTauRCP } from "@/lib/taurpc/useTaurpc";
+import { getTauRPC } from "@/lib/taurpc/useTaurpc";
 import type { DiscoverFilter } from "@/lib/types/discover";
 import type { ModTag } from "@/lib/types/mods";
 
@@ -52,7 +52,7 @@ const Discover = () => {
 
   async function paginateTo(page: number) {
     setIsLoading(true);
-    const rpc = getTauRCP();
+    const rpc = getTauRPC();
     try {
       const mods = await rpc.get_discovery_mods(page);
       setMods(mods.mods);
@@ -66,7 +66,7 @@ const Discover = () => {
   }
 
   async function getFurtherInfo(id: string) {
-    const rpc = getTauRCP();
+    const rpc = getTauRPC();
     const base = mods.find((mod) => mod.id === id);
     if (!base) {
       alert("Mod context mismatch");
@@ -117,7 +117,7 @@ const Discover = () => {
 
   useEffect(() => {
     (async () => {
-      const rpc = await getTauRCP();
+      const rpc = getTauRPC();
       try {
         const res = await rpc.get_discovery_mods(1);
         setMods(res.mods);

@@ -192,7 +192,7 @@ function ModOverlay(props: ModOverlay.Props) {
                   Downloads
                 </span>
                 <p className="font-semibold text-lg">
-                  {toHumanReadable(Number(props.downloads))}
+                  {toHumanReadable(props.downloads)}
                 </p>
               </div>
               <div className="flex flex-1 flex-col items-start rounded-md border border-border/40 bg-neutral-900/70 p-4">

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/primitives/button";
-import { getTauRCP } from "@/lib/taurpc/useTaurpc";
+import { getTauRPC } from "@/lib/taurpc/useTaurpc";
 import { useViewManager } from "@/lib/viewSystem/useViewManager";
 import { View } from "@/lib/viewSystem/View";
 
@@ -68,7 +68,7 @@ export default function DebugPage() {
         <Button
           onClick={() => {
             (async () => {
-              const rpc = getTauRCP();
+              const rpc = getTauRPC();
               await rpc.download_mod("1");
             })();
           }}

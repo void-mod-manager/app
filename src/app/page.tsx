@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { getTauRCP } from "@/lib/taurpc/useTaurpc";
+import { getTauRPC } from "@/lib/taurpc/useTaurpc";
 
 const Home = () => {
   const [greeted, setGreeted] = useState<string | null>(null);
   const greet = useCallback((): void => {
-    const rpc = getTauRCP();
+    const rpc = getTauRPC();
     rpc.greet().then(setGreeted).catch(console.error);
   }, []);
 

@@ -84,19 +84,38 @@ impl ModService for ModServiceImpl {
     }
 
     async fn download_mod(self, id: String) -> Result<(), ()> {
-        let provider_id = self.ctx.active_game_required_provider().expect("msg");
-        let mod_provider = self.ctx.get_mod_provider(&provider_id).expect("msg");
+        let provider_id = match self.ctx.active_game_required_provider() {
+            Some(id) => id,
+            None => return Err(())
+        };
+
+        let mod_provider = match self.ctx.get_mod_provider(&provider_id) {
+            Ok(provider) => provider,
+            Err(_) => return Err(())
+        };
+
         let path = mod_provider.download_mod(id).await;
 
-        let game_prodiver_id = self.ctx.active_game().expect("msg");
-        let game_provider = self.ctx.get_game_provider(&game_prodiver_id).expect("msg");
+        let game_provider_id = match self.ctx.active_game() {
+            Some(id) => id,
+            None => return Err(())
+        };
 
-        // dbg!(&path);
+        let game_provider = match self.ctx.get_game_provider(&game_provider_id) {
+            Ok(provider) => provider,
+            Err(_) => return Err(())
+        };
+
 
         match path {
-            ModDownloadResult::Completed(ref p) => game_provider.install_mod(p).expect("msg"),
+            ModDownloadResult::Completed(ref p) => {
+                if game_provider.install_mod(p).is_err() {
+                    return Err(());
+                }
+            },
             _ => {
-                println!("[dbg] Dropped mod result (fail)")
+                println!("[dbg] Dropped mod result (fail)");
+                return Err(());
             }
         }
 
