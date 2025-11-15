@@ -37,7 +37,7 @@ async fn main() {
     let download_service = Arc::new(DefaultDownloadService::new());
     let api = DefaultProviderApi::new(download_service.clone()).into_arc();
 
-    vmm_providers::register_all_providers(&mut ctx_builder, api.clone());
+    // vmm_providers::register_all_providers(&mut ctx_builder, api.clone());
 
     let ctx = Arc::new(ctx_builder.freeze());
     api.set_context(Arc::clone(&ctx));
