@@ -18,7 +18,7 @@ dependencies = [
  "fern",
  "futures-util",
  "humantime",
- "lib-vmm 0.1.0 (git+https://github.com/void-mod-manager/lib-vmm?branch=feat/specta-types)",
+ "lib-vmm",
  "log",
  "nvml-wrapper",
  "once_cell",
@@ -2050,27 +2050,13 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 [[package]]
 name = "lib-vmm"
 version = "0.1.0"
-source = "git+https://github.com/void-mod-manager/lib-vmm?branch=feat/specta-types#f1cf8d1638da0ad04263e52f0ed50b30aac8ab47"
+source = "git+https://github.com/void-mod-manager/lib-vmm?branch=main#a22636449a0dab2321920bb3aca2d484b2644bc7"
 dependencies = [
  "async-trait",
  "reqwest",
  "serde",
  "serde_json",
  "specta",
- "thiserror 2.0.17",
- "tokio",
- "zip",
-]
-
-[[package]]
-name = "lib-vmm"
-version = "0.1.0"
-source = "git+https://github.com/void-mod-manager/lib-vmm?branch=main#1fac1e2c9d43d1b2027342b8d385f0c011535a8b"
-dependencies = [
- "async-trait",
- "reqwest",
- "serde",
- "serde_json",
  "thiserror 2.0.17",
  "tokio",
  "zip",
@@ -5222,12 +5208,12 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 [[package]]
 name = "vmm-providers"
 version = "0.1.0"
-source = "git+https://github.com/void-mod-manager/providers?branch=main#0023391d1738352de460e1a44f475e881375fee9"
+source = "git+https://github.com/void-mod-manager/providers?branch=main#2065f833267a6ac597cb38605faaf34803619aec"
 dependencies = [
  "anyhow",
  "async-trait",
  "dirs",
- "lib-vmm 0.1.0 (git+https://github.com/void-mod-manager/lib-vmm?branch=main)",
+ "lib-vmm",
  "reqwest",
  "serde",
  "serde_json",

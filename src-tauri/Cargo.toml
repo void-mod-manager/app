@@ -22,7 +22,7 @@ tauri-build = { version = "2.5.2", features = [] }
 
 [dependencies]
 # VMM specific
-lib-vmm = { git = "https://github.com/void-mod-manager/lib-vmm", branch = "feat/specta-types", features = ["specta"] }
+lib-vmm = { git = "https://github.com/void-mod-manager/lib-vmm", branch = "main", features = ["specta"] }
 vmm-providers = { git = "https://github.com/void-mod-manager/providers", branch = "main" }
 
 serde_json = "1.0"
